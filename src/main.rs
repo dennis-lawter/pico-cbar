@@ -4,9 +4,7 @@
 use rp_pico as bsp;
 
 use bsp::entry;
-//use defmt::*;
 use defmt_rtt as _;
-//use embedded_hal::digital::OutputPin;
 use panic_probe as _;
 
 use bsp::hal;
@@ -16,34 +14,25 @@ use bsp::hal::clocks::ClocksManager;
 use bsp::hal::pac;
 use bsp::hal::sio::Sio;
 use bsp::hal::watchdog::Watchdog;
-//use bsp::Pins;
 use cortex_m::delay::Delay;
 use cortex_m::prelude::_embedded_hal_PwmPin;
-//type PwmSlice = bsp::hal::pwm::Slice<bsp::hal::pwm::Pwm6, bsp::hal::pwm::FreeRunning>;
-//type PwmChannel = bsp::hal::pwm::Channel<bsp::hal::pwm::Pwm6, bsp::hal::pwm::FreeRunning, bsp::hal::pwm::B>;
-//type PwmChannel = bsp::hal::pwm::Channel<bsp::hal::pwm::Slice<bsp::hal::pwm::Pwm6, bsp::hal::pwm::FreeRunning>, bsp::hal::pwm::A>;
-//type PwmSlice = bsp::hal::pwm::Slice<bsp::hal::pwm::Pwm6, bsp::hal::pwm::FreeRunning>;
 type BuzzerPwmSlice = hal::pwm::Slice<hal::pwm::Pwm2, hal::pwm::FreeRunning>;
 type BuzzerPinChannel = hal::pwm::Channel<BuzzerPwmSlice, hal::pwm::A>;
 
 #[allow(dead_code)]
 struct Pico {
-    //    pub pac: pac::Peripherals,
-    //    pub core: pac::CorePeripherals,
     pub watchdog: Watchdog,
-    //    pub sio: Sio,
     pub clocks: ClocksManager,
     pub delay: Delay,
-    //pub pins: Pins,
-    //pub pwm6: PwmSlice,
-    //pub pwm_channel: PwmChannel,
     pub buzzer_channel_ptr: *mut BuzzerPinChannel,
     pub buzzer_pwm_slice_ptr: *mut BuzzerPwmSlice,
 }
 impl Pico {
-    fn set_amplitude(&mut self, amplitude: u16) {
+    fn set_amplitude(&mut self, amplitude: u8) {
+        //let scaled_amplitude = (amplitude as u32 * (5_535 + 1)) / 256;
+        let scaled_amplitude = amplitude as u16 * 2;
         unsafe {
-            (*self.buzzer_channel_ptr).set_duty(amplitude);
+            (*self.buzzer_channel_ptr).set_duty(scaled_amplitude as u16);
         }
     }
 }
@@ -78,15 +67,6 @@ impl Default for Pico {
 
         let mut pwm_slices = bsp::hal::pwm::Slices::new(pac.PWM, &mut pac.RESETS);
 
-        /*
-                let pwm6 = &mut pwm_slices.pwm6;
-                pwm6.set_ph_correct();
-                pwm6.set_top(65_535);
-                pwm6.set_div_int(1);
-                pwm6.set_div_frac(0);
-                pwm6.enable();
-        */
-
         unsafe {
             // Configure buzzer PWM slice
             let buzzer_pwm_slice_ptr: *mut BuzzerPwmSlice =
@@ -95,24 +75,28 @@ impl Default for Pico {
             let buzzer_channel_ptr =
                 &mut (*buzzer_pwm_slice_ptr).channel_a as *mut BuzzerPinChannel;
             (*buzzer_channel_ptr).output_to(pins.gpio4);
-            //(*buzzer_channel_ptr).set_duty(0);
 
+            //let top: u64 = 65_535;
+            //let system_clock_freq: u64 = clocks.system_clock.freq().to_Hz() as u64;
+            //let target_pwm_freq: u64 = 22_050 * 256; // Match PWM frequency with sample rate
+
+            //let div_comb = (system_clock_freq * 16) / (target_pwm_freq * (top + 1));
+            //let div_int = (div_comb / 16) as u8;
+            //let div_frac = (div_comb % 16) as u8;
+
+            let top = 512;
+            let div_int = 1;
+            let div_frac = 0;
             (*buzzer_pwm_slice_ptr).set_ph_correct();
-            (*buzzer_pwm_slice_ptr).set_div_int(0);
-            (*buzzer_pwm_slice_ptr).set_div_frac(0);
-            (*buzzer_pwm_slice_ptr).set_top(65_535);
+            (*buzzer_pwm_slice_ptr).set_div_int(div_int);
+            (*buzzer_pwm_slice_ptr).set_div_frac(div_frac);
+            (*buzzer_pwm_slice_ptr).set_top(top as u16);
             (*buzzer_pwm_slice_ptr).enable();
 
             Self {
-                //          pac,
-                //          core,
                 watchdog,
-                //            sio,
                 clocks,
                 delay,
-                //pins,
-                //pwm6: (*pwm6),
-                //pwm_channel,
                 buzzer_channel_ptr,
                 buzzer_pwm_slice_ptr,
             }
@@ -121,32 +105,31 @@ impl Default for Pico {
 }
 
 const CBAR_MISS1: &[u8; 7710] = include_bytes!("../sfx/cbar_miss1.wav");
-//const CBAR_MISS1_BR: usize = 16;
-const CBAR_MISS1_SR: usize = 22_050;
+const CBAR_HITBOD1: &[u8; 7048] = include_bytes!("../sfx/cbar_hitbod1.wav");
 
 #[entry]
 fn main() -> ! {
     let mut pico = Pico::default();
 
     loop {
-        play_crowbar_miss(&mut pico);
+        play_8b_sound(&mut pico, CBAR_MISS1);
+        pico.set_amplitude(0);
+        pico.delay.delay_ms(1_000);
+
+        play_8b_sound(&mut pico, CBAR_HITBOD1);
         pico.set_amplitude(0);
         pico.delay.delay_ms(1_000);
     }
 }
 
-fn play_crowbar_miss(pico: &mut Pico) {
-    // Extract 16-bit audio samples from the WAV file
-    let audio_data = &CBAR_MISS1[44..]; // Skip the WAV header
-    let mut idx = 0;
+const SAMPLE_RATE: u32 = 22_050;
+const SAMPLE_WAIT: u32 = 1_000_000 / SAMPLE_RATE; // Microseconds per sample
 
-    while idx < audio_data.len() {
-        let sample = (audio_data[idx] as u16) | ((audio_data[idx + 1] as u16) << 8);
-        //let amplitude = sample.wrapping_add(32_767); // Convert signed 16-bit to unsigned 16-bit
-        pico.set_amplitude(sample);
+fn play_8b_sound(pico: &mut Pico, sound: &[u8]) {
+    for i in 44..sound.len() {
+        pico.set_amplitude(sound[i]);
 
         // Wait to maintain sample rate
-        pico.delay.delay_us(1_000_000 / CBAR_MISS1_SR as u32);
-        idx += 2;
+        pico.delay.delay_us(SAMPLE_WAIT);
     }
 }
