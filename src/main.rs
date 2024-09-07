@@ -16,6 +16,12 @@ use bsp::hal::sio::Sio;
 use bsp::hal::watchdog::Watchdog;
 use cortex_m::delay::Delay;
 use cortex_m::prelude::_embedded_hal_PwmPin;
+use embedded_hal::digital::InputPin;
+
+type Key0Pin = hal::gpio::Pin<hal::gpio::bank0::Gpio15, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
+type Key1Pin = hal::gpio::Pin<hal::gpio::bank0::Gpio0, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
+type Key2Pin = hal::gpio::Pin<hal::gpio::bank0::Gpio1, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
+
 type BuzzerPwmSlice = hal::pwm::Slice<hal::pwm::Pwm2, hal::pwm::FreeRunning>;
 type BuzzerPinChannel = hal::pwm::Channel<BuzzerPwmSlice, hal::pwm::A>;
 
@@ -26,11 +32,14 @@ struct Pico {
     pub delay: Delay,
     pub buzzer_channel_ptr: *mut BuzzerPinChannel,
     pub buzzer_pwm_slice_ptr: *mut BuzzerPwmSlice,
+    pub key0: Key0Pin,
+    pub key1: Key1Pin,
+    pub key2: Key2Pin,
 }
 impl Pico {
     fn set_amplitude(&mut self, amplitude: u8) {
         //let scaled_amplitude = (amplitude as u32 * (5_535 + 1)) / 256;
-        let scaled_amplitude = amplitude as u16 * 2;
+        let scaled_amplitude = amplitude as u16;
         unsafe {
             (*self.buzzer_channel_ptr).set_duty(scaled_amplitude as u16);
         }
@@ -64,6 +73,10 @@ impl Default for Pico {
             sio.gpio_bank0,
             &mut pac.RESETS,
         );
+
+        let key0 = pins.gpio15.into_pull_up_input();
+        let key1 = pins.gpio0.into_pull_up_input();
+        let key2 = pins.gpio1.into_pull_up_input();
 
         let mut pwm_slices = bsp::hal::pwm::Slices::new(pac.PWM, &mut pac.RESETS);
 
@@ -99,6 +112,9 @@ impl Default for Pico {
                 delay,
                 buzzer_channel_ptr,
                 buzzer_pwm_slice_ptr,
+                key0,
+                key1,
+                key2,
             }
         }
     }
@@ -106,19 +122,35 @@ impl Default for Pico {
 
 const CBAR_MISS1: &[u8; 7710] = include_bytes!("../sfx/cbar_miss1.wav");
 const CBAR_HITBOD1: &[u8; 7048] = include_bytes!("../sfx/cbar_hitbod1.wav");
+const CBAR_HIT1: &[u8; 7784] = include_bytes!("../sfx/cbar_hit1.wav");
 
 #[entry]
 fn main() -> ! {
     let mut pico = Pico::default();
+    let mut key0_pressed = false;
 
     loop {
-        play_8b_sound(&mut pico, CBAR_MISS1);
-        pico.set_amplitude(0);
-        pico.delay.delay_ms(1_000);
+        let key1_pressed = pico.key1.is_low().unwrap();
+        let key2_pressed = pico.key2.is_low().unwrap();
 
-        play_8b_sound(&mut pico, CBAR_HITBOD1);
-        pico.set_amplitude(0);
-        pico.delay.delay_ms(1_000);
+        let new_key0_pressed = pico.key0.is_low().unwrap();
+        if key0_pressed && !new_key0_pressed {
+            if key1_pressed {
+                play_8b_sound(&mut pico, CBAR_HIT1);
+            } else if key2_pressed {
+                play_8b_sound(&mut pico, CBAR_HITBOD1);
+            } else {
+                play_8b_sound(&mut pico, CBAR_MISS1);
+            }
+        }
+        key0_pressed = new_key0_pressed;
+        //play_8b_sound(&mut pico, CBAR_MISS1);
+        //pico.set_amplitude(0);
+        //pico.delay.delay_ms(1_000);
+
+        //play_8b_sound(&mut pico, CBAR_HITBOD1);
+        //pico.set_amplitude(0);
+        //pico.delay.delay_ms(1_000);
     }
 }
 
