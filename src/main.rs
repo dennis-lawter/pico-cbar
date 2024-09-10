@@ -18,9 +18,12 @@ use cortex_m::delay::Delay;
 use cortex_m::prelude::_embedded_hal_PwmPin;
 use embedded_hal::digital::InputPin;
 
-type Key0Pin = hal::gpio::Pin<hal::gpio::bank0::Gpio15, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
-type Key1Pin = hal::gpio::Pin<hal::gpio::bank0::Gpio0, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
-type Key2Pin = hal::gpio::Pin<hal::gpio::bank0::Gpio1, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
+type Key0Pin =
+    hal::gpio::Pin<hal::gpio::bank0::Gpio15, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
+type Key1Pin =
+    hal::gpio::Pin<hal::gpio::bank0::Gpio0, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
+type Key2Pin =
+    hal::gpio::Pin<hal::gpio::bank0::Gpio1, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
 
 type BuzzerPwmSlice = hal::pwm::Slice<hal::pwm::Pwm2, hal::pwm::FreeRunning>;
 type BuzzerPinChannel = hal::pwm::Channel<BuzzerPwmSlice, hal::pwm::A>;
@@ -127,14 +130,13 @@ const CBAR_HIT1: &[u8; 7784] = include_bytes!("../sfx/cbar_hit1.wav");
 #[entry]
 fn main() -> ! {
     let mut pico = Pico::default();
-    let mut key0_pressed = false;
-
+    let mut key0_us_pressed = 0usize;
+    let key0_us_limit = 10_000usize;
     loop {
         let key1_pressed = pico.key1.is_low().unwrap();
         let key2_pressed = pico.key2.is_low().unwrap();
 
-        let new_key0_pressed = pico.key0.is_low().unwrap();
-        if key0_pressed && !new_key0_pressed {
+        if key0_us_pressed == key0_us_limit {
             if key1_pressed {
                 play_8b_sound(&mut pico, CBAR_HIT1);
             } else if key2_pressed {
@@ -143,14 +145,14 @@ fn main() -> ! {
                 play_8b_sound(&mut pico, CBAR_MISS1);
             }
         }
-        key0_pressed = new_key0_pressed;
-        //play_8b_sound(&mut pico, CBAR_MISS1);
-        //pico.set_amplitude(0);
-        //pico.delay.delay_ms(1_000);
 
-        //play_8b_sound(&mut pico, CBAR_HITBOD1);
-        //pico.set_amplitude(0);
-        //pico.delay.delay_ms(1_000);
+        if !pico.key0.is_low().unwrap() && key0_us_pressed < usize::MAX {
+            key0_us_pressed += 1;
+        } else {
+            key0_us_pressed = 0;
+        }
+
+        pico.delay.delay_us(1);
     }
 }
 
