@@ -123,24 +123,40 @@ impl Default for Pico {
     }
 }
 
-const CBAR_MISS1: &[u8; 7710] = include_bytes!("../sfx/cbar_miss1.wav");
-const CBAR_HITBOD1: &[u8; 7048] = include_bytes!("../sfx/cbar_hitbod1.wav");
 const CBAR_HIT1: &[u8; 7784] = include_bytes!("../sfx/cbar_hit1.wav");
+const CBAR_HIT2: &[u8; 5530] = include_bytes!("../sfx/cbar_hit2.wav");
+const CBAR_HITBOD1: &[u8; 7048] = include_bytes!("../sfx/cbar_hitbod1.wav");
+const CBAR_HITBOD2: &[u8; 5518] = include_bytes!("../sfx/cbar_hitbod2.wav");
+const CBAR_HITBOD3: &[u8; 7744] = include_bytes!("../sfx/cbar_hitbod3.wav");
+const CBAR_MISS1: &[u8; 7710] = include_bytes!("../sfx/cbar_miss1.wav");
 
 #[entry]
 fn main() -> ! {
     let mut pico = Pico::default();
     let mut key0_us_pressed = 0usize;
     let key0_us_limit = 10_000usize;
+
+    let mut loop_count = 0;
+
     loop {
+        loop_count += 1;
         let key1_pressed = pico.key1.is_low().unwrap();
         let key2_pressed = pico.key2.is_low().unwrap();
 
         if key0_us_pressed == key0_us_limit {
             if key1_pressed {
-                play_8b_sound(&mut pico, CBAR_HIT1);
+                match loop_count % 2 {
+                    0 => play_8b_sound(&mut pico, CBAR_HIT1),
+                    1 => play_8b_sound(&mut pico, CBAR_HIT2),
+                    _ => {}
+                };
             } else if key2_pressed {
-                play_8b_sound(&mut pico, CBAR_HITBOD1);
+                match loop_count % 3 {
+                    0 => play_8b_sound(&mut pico, CBAR_HITBOD1),
+                    1 => play_8b_sound(&mut pico, CBAR_HITBOD2),
+                    2 => play_8b_sound(&mut pico, CBAR_HITBOD3),
+                    _ => {}
+                }
             } else {
                 play_8b_sound(&mut pico, CBAR_MISS1);
             }
