@@ -2,11 +2,11 @@ build:
 	cargo build --release -Zbuild-std --target thumbv6m-none-eabi
 run: build
 	echo "Searching for Raspberry Pi Pico..."
-	@while [ ! -d "/media/$$USER/RPI-RP2" ]; do \
+	@while [ ! -d "/run/media/$$USER/RPI-RP2" ]; do \
 		sleep 1; \
 	done; \
 	echo "Raspberry Pi Pico mounted."
-	cargo run --release
+	cargo run --release -Zbuild-std --target thumbv6m-none-eabi
 fmt:
 	rustfmt src/*.rs
 init:

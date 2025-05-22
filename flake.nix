@@ -33,6 +33,7 @@
           
           # dependencies
           flip-link
+          elf2uf2-rs
           udev
         ];
 
