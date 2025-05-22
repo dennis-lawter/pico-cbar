@@ -2,6 +2,7 @@
 #![no_main]
 
 mod pico;
+mod wav;
 
 use pico::KeyNames;
 use pico::Pico;
@@ -59,14 +60,19 @@ fn main() -> ! {
     }
 }
 
-const SAMPLE_RATE: u32 = 22_050;
-const SAMPLE_WAIT: u32 = 1_000_000 / SAMPLE_RATE; // Microseconds per sample
+const SAMPLE_RATE_22K: u32 = 22_050;
+const SAMPLE_WAIT_22K_IN_US: u32 = 1_000_000 / SAMPLE_RATE_22K;
+
+#[allow(dead_code)]
+const SAMPLE_RATE_11K: u32 = 11_025;
+#[allow(dead_code)]
+const SAMPLE_WAIT_11K_IN_US: u32 = 1_000_000 / SAMPLE_RATE_11K;
 
 fn play_8b_sound(pico: &mut Pico, sound: &[u8]) {
     for i in 44..sound.len() {
         pico.set_amplitude(sound[i]);
 
         // Wait to maintain sample rate
-        pico.delay.delay_us(SAMPLE_WAIT);
+        pico.delay.delay_us(SAMPLE_WAIT_22K_IN_US);
     }
 }
