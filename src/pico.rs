@@ -14,6 +14,8 @@ use cortex_m::delay::Delay;
 use cortex_m::prelude::_embedded_hal_PwmPin;
 use embedded_hal::digital::InputPin;
 
+use crate::wav::Wav;
+
 type Key0Pin =
     hal::gpio::Pin<hal::gpio::bank0::Gpio15, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
 type Key1Pin =
@@ -58,6 +60,20 @@ impl Pico {
             KeyNames::BodyHit => self.key2.is_low().unwrap(),
             // KeyNames::Whoosh => self.key3.is_low().unwrap(),
         }
+    }
+
+    pub fn play_wav_blocking(&mut self, wav: &Wav) {
+        let sample_rate = wav.sample_rate;
+        let cpu_delay_between_samples_in_us = 1_000_000 / sample_rate;
+        // let cpu_delay_between_samples_in_us = 1_000_000 / 11_025;
+        let sound = wav.data_ref;
+        for i in 44..(44 + wav.chunk_len) {
+            self.set_amplitude(sound[i]);
+
+            // Wait to maintain sample rate
+            self.delay.delay_us(cpu_delay_between_samples_in_us);
+        }
+        self.set_amplitude(0);
     }
 }
 impl Default for Pico {
