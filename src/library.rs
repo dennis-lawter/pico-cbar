@@ -1,13 +1,13 @@
 use crate::wav::Wav;
 
-pub const CBAR_HIT1: &[u8; 7784] = include_bytes!("../sfx/cbar_hit1.wav");
-pub const CBAR_HIT2: &[u8; 5530] = include_bytes!("../sfx/cbar_hit2.wav");
+const CBAR_HIT1: &[u8; 7784] = include_bytes!("../sfx/cbar_hit1.wav");
+const CBAR_HIT2: &[u8; 5530] = include_bytes!("../sfx/cbar_hit2.wav");
 
-pub const CBAR_HITBOD1: &[u8; 7048] = include_bytes!("../sfx/cbar_hitbod1.wav");
-pub const CBAR_HITBOD2: &[u8; 5518] = include_bytes!("../sfx/cbar_hitbod2.wav");
-pub const CBAR_HITBOD3: &[u8; 7744] = include_bytes!("../sfx/cbar_hitbod3.wav");
+const CBAR_HITBOD1: &[u8; 7048] = include_bytes!("../sfx/cbar_hitbod1.wav");
+const CBAR_HITBOD2: &[u8; 5518] = include_bytes!("../sfx/cbar_hitbod2.wav");
+const CBAR_HITBOD3: &[u8; 7744] = include_bytes!("../sfx/cbar_hitbod3.wav");
 
-pub const CBAR_MISS1: &[u8; 7710] = include_bytes!("../sfx/cbar_miss1.wav");
+const CBAR_MISS1: &[u8; 7710] = include_bytes!("../sfx/cbar_miss1.wav");
 
 pub struct Library<'a> {
     pub cbar_hit1: Wav<'a>,

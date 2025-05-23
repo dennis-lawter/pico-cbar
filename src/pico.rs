@@ -1,3 +1,4 @@
+use embedded_hal::digital::OutputPin;
 use rp_pico as bsp;
 
 use defmt_rtt as _;
@@ -16,21 +17,39 @@ use embedded_hal::digital::InputPin;
 
 use crate::wav::Wav;
 
-type Key0Pin =
+type TiltTriggerButtonPin =
     hal::gpio::Pin<hal::gpio::bank0::Gpio15, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
-type Key1Pin =
+type TiltResetButtonPin =
+    hal::gpio::Pin<hal::gpio::bank0::Gpio14, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
+type BlackButtonPin =
     hal::gpio::Pin<hal::gpio::bank0::Gpio0, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
-type Key2Pin =
+type RedButtonPin =
     hal::gpio::Pin<hal::gpio::bank0::Gpio1, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
+
+type Led1Pin = hal::gpio::Pin<
+    hal::gpio::bank0::Gpio18,
+    hal::gpio::FunctionSio<hal::gpio::SioOutput>,
+    hal::gpio::PullDown,
+>;
+type Led2Pin = hal::gpio::Pin<
+    hal::gpio::bank0::Gpio19,
+    hal::gpio::FunctionSio<hal::gpio::SioOutput>,
+    hal::gpio::PullDown,
+>;
 
 type BuzzerPwmSlice = hal::pwm::Slice<hal::pwm::Pwm2, hal::pwm::FreeRunning>;
 type BuzzerPinChannel = hal::pwm::Channel<BuzzerPwmSlice, hal::pwm::A>;
 
 pub enum KeyNames {
-    Tilt,
+    TiltTrigger,
+    TiltReset,
     MetalHit,
     BodyHit,
-    // Whoosh,
+}
+
+pub enum LedNames {
+    Led1,
+    Led2,
 }
 
 #[allow(dead_code)]
@@ -40,9 +59,12 @@ pub struct Pico {
     pub delay: Delay,
     pub buzzer_channel_ptr: *mut BuzzerPinChannel,
     pub buzzer_pwm_slice_ptr: *mut BuzzerPwmSlice,
-    pub key0: Key0Pin,
-    pub key1: Key1Pin,
-    pub key2: Key2Pin,
+    pub tilt_trigger_button: TiltTriggerButtonPin,
+    pub tilt_reset_button: TiltResetButtonPin,
+    pub black_button: BlackButtonPin,
+    pub red_button: RedButtonPin,
+    pub led1: Led1Pin,
+    pub led2: Led2Pin,
 }
 impl Pico {
     pub fn set_amplitude(&mut self, amplitude: u8) {
@@ -53,11 +75,21 @@ impl Pico {
         }
     }
 
+    pub fn set_led_state(&mut self, led: LedNames, state: bool) {
+        match (led, state) {
+            (LedNames::Led1, true) => self.led1.set_high().unwrap(),
+            (LedNames::Led1, false) => self.led1.set_low().unwrap(),
+            (LedNames::Led2, true) => self.led2.set_high().unwrap(),
+            (LedNames::Led2, false) => self.led2.set_low().unwrap(),
+        }
+    }
+
     pub fn is_key_pressed(&mut self, key: KeyNames) -> bool {
         match key {
-            KeyNames::Tilt => self.key0.is_low().unwrap(),
-            KeyNames::MetalHit => self.key1.is_low().unwrap(),
-            KeyNames::BodyHit => self.key2.is_low().unwrap(),
+            KeyNames::TiltTrigger => self.tilt_trigger_button.is_low().unwrap(),
+            KeyNames::TiltReset => self.tilt_reset_button.is_low().unwrap(),
+            KeyNames::MetalHit => self.black_button.is_low().unwrap(),
+            KeyNames::BodyHit => self.red_button.is_low().unwrap(),
             // KeyNames::Whoosh => self.key3.is_low().unwrap(),
         }
     }
@@ -105,9 +137,13 @@ impl Default for Pico {
             &mut pac.RESETS,
         );
 
-        let key0 = pins.gpio15.into_pull_up_input();
-        let key1 = pins.gpio0.into_pull_up_input();
-        let key2 = pins.gpio1.into_pull_up_input();
+        let tilt_trigger_button = pins.gpio15.into_pull_up_input();
+        let tilt_reset_button = pins.gpio14.into_pull_up_input();
+        let black_button = pins.gpio0.into_pull_up_input();
+        let red_button = pins.gpio1.into_pull_up_input();
+
+        let led1 = pins.gpio18.into_push_pull_output();
+        let led2 = pins.gpio19.into_push_pull_output();
 
         let mut pwm_slices = bsp::hal::pwm::Slices::new(pac.PWM, &mut pac.RESETS);
 
@@ -143,9 +179,12 @@ impl Default for Pico {
                 delay,
                 buzzer_channel_ptr,
                 buzzer_pwm_slice_ptr,
-                key0,
-                key1,
-                key2,
+                tilt_trigger_button,
+                tilt_reset_button,
+                black_button,
+                red_button,
+                led1,
+                led2,
             }
         }
     }
