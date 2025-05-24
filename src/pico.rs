@@ -15,6 +15,7 @@ use cortex_m::delay::Delay;
 use cortex_m::prelude::_embedded_hal_PwmPin;
 use embedded_hal::digital::InputPin;
 
+use crate::button::ButtonName;
 use crate::wav::Wav;
 
 type TiltTriggerButtonPin =
@@ -39,13 +40,6 @@ type Led2Pin = hal::gpio::Pin<
 
 type BuzzerPwmSlice = hal::pwm::Slice<hal::pwm::Pwm2, hal::pwm::FreeRunning>;
 type BuzzerPinChannel = hal::pwm::Channel<BuzzerPwmSlice, hal::pwm::A>;
-
-pub enum KeyNames {
-    TiltTrigger,
-    TiltReset,
-    MetalHit,
-    BodyHit,
-}
 
 pub enum LedNames {
     Led1,
@@ -84,20 +78,18 @@ impl Pico {
         }
     }
 
-    pub fn is_key_pressed(&mut self, key: KeyNames) -> bool {
+    pub fn is_button_pressed(&mut self, key: ButtonName) -> bool {
         match key {
-            KeyNames::TiltTrigger => self.tilt_trigger_button.is_low().unwrap(),
-            KeyNames::TiltReset => self.tilt_reset_button.is_low().unwrap(),
-            KeyNames::MetalHit => self.black_button.is_low().unwrap(),
-            KeyNames::BodyHit => self.red_button.is_low().unwrap(),
-            // KeyNames::Whoosh => self.key3.is_low().unwrap(),
+            ButtonName::TiltTrigger => self.tilt_trigger_button.is_low().unwrap(),
+            ButtonName::TiltReset => self.tilt_reset_button.is_low().unwrap(),
+            ButtonName::MetalHit => self.black_button.is_low().unwrap(),
+            ButtonName::MeatHit => self.red_button.is_low().unwrap(),
         }
     }
 
     pub fn play_wav_blocking(&mut self, wav: &Wav) {
         let sample_rate = wav.sample_rate;
         let cpu_delay_between_samples_in_us = 1_000_000 / sample_rate;
-        // let cpu_delay_between_samples_in_us = 1_000_000 / 11_025;
         let sound = wav.data_ref;
         for i in 44..(44 + wav.chunk_len) {
             self.set_amplitude(sound[i]);

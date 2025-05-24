@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "ms-vscode.hexeditor",
+        "bbenoist.nix",
+        "rust-lang.rust-analyzer"
+    ]
+}
