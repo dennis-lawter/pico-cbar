@@ -9,6 +9,8 @@ const CBAR_HITBOD3: &[u8; 7744] = include_bytes!("../sfx/cbar_hitbod3.wav");
 
 const CBAR_MISS1: &[u8; 7710] = include_bytes!("../sfx/cbar_miss1.wav");
 
+const UWISH: &[u8; 30048] = include_bytes!("../sfx/ba_uwish.wav");
+
 pub struct Library<'a> {
     pub cbar_hit1: Wav<'a>,
     pub cbar_hit2: Wav<'a>,
@@ -18,6 +20,8 @@ pub struct Library<'a> {
     pub cbar_hitbod3: Wav<'a>,
 
     pub cbar_miss1: Wav<'a>,
+
+    pub uwish: Wav<'a>,
 }
 impl Default for Library<'static> {
     fn default() -> Self {
@@ -28,6 +32,7 @@ impl Default for Library<'static> {
             cbar_hitbod2: Wav::new(CBAR_HITBOD2),
             cbar_hitbod3: Wav::new(CBAR_HITBOD3),
             cbar_miss1: Wav::new(CBAR_MISS1),
+            uwish: Wav::new(UWISH),
         }
     }
 }

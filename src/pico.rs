@@ -91,7 +91,12 @@ impl Pico {
         let sample_rate = wav.sample_rate;
         let cpu_delay_between_samples_in_us = 1_000_000 / sample_rate;
         let sound = wav.data_ref;
-        for i in 44..(44 + wav.chunk_len) {
+        let data_start = 44;
+        let mut data_end = data_start + wav.chunk_len;
+        if data_end > sound.len() {
+            data_end = sound.len();
+        }
+        for i in data_start..data_end {
             self.set_amplitude(sound[i]);
 
             // Wait to maintain sample rate
