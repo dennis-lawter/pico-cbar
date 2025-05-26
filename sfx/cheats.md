@@ -13,7 +13,7 @@ These are the wavs I'm considering adding.
 
 ## Funny scientist sounds
 Best are bolded.
-- **c1a0_sci_catscream.wav**
+- **c1a0_sci_catscream.wav** I believe this is repeated in the scream*.wav list
 - c1a2_sci_fool.wav
 - dontwantdie.wav
 - donuteater.wav
@@ -63,12 +63,48 @@ While a sound is playing, no button inputs are read.
 - Barney
     - His sfx all start with a series of M, and finish with B to confirm.
     - **MB** cycles through the smell sfx
-    - **MMB** cyles through drinking sfx (coldone.wav, ba_later.wav, c2a4_ba_longnite.wav)
-    - **MMMB** cycles through funny misc ()
-    - **MMMM** cycles screams (ba_die1.wav through ba_die3.wav and ba_pain1 through ba_pain3.wav)
+        - somethingdied.wav
+        - somethingstinky.wav
+        - stench.wav
+    - **MMB** cyles through drinking sfx
+        - coldone.wav
+        - ba_later.wav
+        - c2a4_ba_longnite.wav
+        - beertopside.wav
+    - **MMMB** cycles through funny misc
+        - badarea.wav
+        - badfeeling.wav
+        - ba_dotoyou.wav
+        - c3a1_ba_3sat.wav "so send it already"
+        - survive.wav
+        - whatsgoingon.wav
+        - youtalkmuch.wav
+    - **MMMM** cycles screams
+        - ba_die1.wav
+        - ba_die2.wav
+        - ba_die3.wav
+        - ba_pain1.wav
+        - ba_pain2.wav
+        - ba_pain3.wav
 - Scientist
     - His sfx all start with a series of B, and finish with M to confirm.
     - **BM** cycles through the smell sfx
-    - **BBM** cycles through the drinking sfx (seencup.wav, hungryyet.wav, needsleep.wav)
-    - **BBBM** cycles through funny misc ()
-    - **BBBB** cycles screams (scream*.wav)
+        - doyousmell.wav
+        - odorfromyou.wav
+        - peculiarodor.wav
+        - somethingfoul.wav
+        - stench.wav
+    - **BBM** cycles through the drinking sfx
+        - seencup.wav
+        - hungryyet.wav
+        - needsleep.wav
+    - **BBBM** cycles through funny misc
+        - c1a2_sci_fool.wav
+        - dontwantdie.wav
+        - donuteater.wav
+        - excellentteam.wav
+        - hideglasses.wav
+        - uselessphd.wav
+        - weartie.wav
+    - **BBBB** cycles screams
+        - scream*.wav
