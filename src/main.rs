@@ -50,7 +50,7 @@ fn main_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -
             return States::Cheat;
         }
         Some(false) => {
-            cbar.pico.play_wav_blocking(&cbar.snd_lib.cbar_miss1);
+            cbar.pico.play_wav_blocking(&cbar.snd_lib.wrong);
         }
         None => {}
     }

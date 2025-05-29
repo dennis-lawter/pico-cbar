@@ -14,6 +14,8 @@ include_wav!(CBAR_HITBOD1, "../sfx/weapons/cbar_hitbod1.wav");
 include_wav!(CBAR_HITBOD2, "../sfx/weapons/cbar_hitbod2.wav");
 include_wav!(CBAR_HITBOD3, "../sfx/weapons/cbar_hitbod3.wav");
 
+// Button sound that plays when a wrong cheatcode is entered
+include_wav!(BUTTON2, "../sfx/buttons/button2.wav");
 // Barney "Heh, you're gonna wish you hadn't done that"
 // Used when entering the cheat mode successfully
 include_wav!(UWISH, "../sfx/barney/ba_uwish.wav");
@@ -88,6 +90,7 @@ pub struct SoundLibrary<'a> {
 
     pub cbar_miss1: Wav<'a>,
 
+    pub wrong: Wav<'a>,
     pub uwish: Wav<'a>,
 
     pub ba_somethingdied: Wav<'a>,
@@ -149,6 +152,7 @@ impl Default for SoundLibrary<'static> {
             cbar_hitbod2: Wav::new(CBAR_HITBOD2),
             cbar_hitbod3: Wav::new(CBAR_HITBOD3),
             cbar_miss1: Wav::new(CBAR_MISS1),
+            wrong: Wav::new(BUTTON2),
             uwish: Wav::new(UWISH),
             ba_somethingdied: Wav::new(BA_SOMETHINGDIED),
             ba_somethingstinky: Wav::new(BA_SOMETHINGSTINKY),
