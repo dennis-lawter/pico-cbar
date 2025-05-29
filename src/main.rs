@@ -3,116 +3,66 @@
 
 mod button;
 mod cbar;
+mod cheat_code;
 mod library;
 mod pico;
 mod wav;
 
 use cbar::Cbar;
 
+use cheat_code::CheatCodeRecord;
+use cheat_code::CheatInputEvents;
 use rp_pico as bsp;
 
 use bsp::entry;
 
-#[derive(PartialEq, Eq)]
-pub enum CheatInputEvents {
-    MetalDown,
-    MetalUp,
-    MeatDown,
-    MeatUp,
-
-    None,
-}
+const US_REQUIRED_FOR_VALID_PRESS: usize = 10_000; // 1/100th of a second
 
 enum States {
     Main,
     Cheat,
 }
 
-const US_REQUIRED_FOR_VALID_PRESS: usize = 10_000; // 1/100th of a second
-const CHEAT_CODE: [CheatInputEvents; 16] = [
-    // MM
-    CheatInputEvents::MetalDown,
-    CheatInputEvents::MetalUp,
-    CheatInputEvents::MetalDown,
-    CheatInputEvents::MetalUp,
-    // BB
-    CheatInputEvents::MeatDown,
-    CheatInputEvents::MeatUp,
-    CheatInputEvents::MeatDown,
-    CheatInputEvents::MeatUp,
-    // MB
-    CheatInputEvents::MetalDown,
-    CheatInputEvents::MetalUp,
-    CheatInputEvents::MeatDown,
-    CheatInputEvents::MeatUp,
-    // MB
-    CheatInputEvents::MetalDown,
-    CheatInputEvents::MetalUp,
-    CheatInputEvents::MeatDown,
-    CheatInputEvents::MeatUp,
-];
-
 #[entry]
 fn main() -> ! {
     let mut cbar = Cbar::default();
+    let mut cheat_code_record = CheatCodeRecord::default();
 
-    let mut cheat_recording: [CheatInputEvents; 16] = [const { CheatInputEvents::None }; 16];
-    let mut cheat_idx = 0usize;
+    // let mut cheat_recording: [CheatInputEvents; 16] = [const { CheatInputEvents::None }; 16];
+    // let mut cheat_idx = 0usize;
     let mut state = States::Main;
 
     loop {
         state = match state {
-            States::Main => main_state_loop(&mut cbar, &mut cheat_recording, &mut cheat_idx),
+            States::Main => main_state_loop(&mut cbar, &mut cheat_code_record),
             States::Cheat => cheat_state_loop(&mut cbar),
         };
     }
 }
 
-fn main_state_loop(
-    cbar: &mut Cbar<'static>,
-    cheat_recording: &mut [CheatInputEvents],
-    cheat_idx: &mut usize,
-) -> States {
+fn main_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -> States {
     cbar.tick();
-    if *cheat_idx == cheat_recording.len() {
-        let mut cheat_is_valid = true;
-        for i in 0..cheat_recording.len() {
-            if cheat_recording[i] != CHEAT_CODE[i] {
-                cheat_is_valid = false;
-                break;
-            }
-        }
-        if cheat_is_valid {
+
+    match cheat_code.validate() {
+        Some(true) => {
             cbar.pico.play_wav_blocking(&cbar.snd_lib.uwish);
             return States::Cheat;
-        } else {
+        }
+        Some(false) => {
             cbar.pico.play_wav_blocking(&cbar.snd_lib.cbar_miss1);
-            // Reset the cheat entries
-            *cheat_idx = 0;
-            for i in 0..cheat_recording.len() {
-                cheat_recording[i] = CheatInputEvents::None;
-            }
         }
-    } else if *cheat_idx < cheat_recording.len() {
-        if cbar.metal_btn.closed_us == US_REQUIRED_FOR_VALID_PRESS {
-            cheat_recording[*cheat_idx] = CheatInputEvents::MetalDown;
-            *cheat_idx += 1;
-        } else if cbar.metal_btn.open_us == US_REQUIRED_FOR_VALID_PRESS {
-            // Can't start a cheat with a button up
-            if *cheat_idx != 0 {
-                cheat_recording[*cheat_idx] = CheatInputEvents::MetalUp;
-                *cheat_idx += 1;
-            }
-        } else if cbar.body_btn.closed_us == US_REQUIRED_FOR_VALID_PRESS {
-            cheat_recording[*cheat_idx] = CheatInputEvents::MeatDown;
-            *cheat_idx += 1;
-        } else if cbar.body_btn.open_us == US_REQUIRED_FOR_VALID_PRESS {
-            // Can't start a cheat with a button up
-            if *cheat_idx != 0 {
-                cheat_recording[*cheat_idx] = CheatInputEvents::MeatUp;
-                *cheat_idx += 1;
-            }
-        }
+        None => {}
+    }
+
+    if cbar.metal_btn.closed_us == US_REQUIRED_FOR_VALID_PRESS {
+        cheat_code.add_event(CheatInputEvents::MetalDown);
+    } else if cbar.metal_btn.open_us == US_REQUIRED_FOR_VALID_PRESS {
+        cheat_code.add_event(CheatInputEvents::MetalUp);
+    }
+    if cbar.body_btn.closed_us == US_REQUIRED_FOR_VALID_PRESS {
+        cheat_code.add_event(CheatInputEvents::BodyDown);
+    } else if cbar.body_btn.open_us == US_REQUIRED_FOR_VALID_PRESS {
+        cheat_code.add_event(CheatInputEvents::BodyUp);
     }
 
     if cbar.swing_primed {
@@ -130,11 +80,8 @@ fn main_state_loop(
             cbar.pico.set_led_state(pico::LedNames::Led1, false);
             cbar.pico.set_led_state(pico::LedNames::Led2, false);
             cbar.swing_primed = false;
-            // Reset the cheat entries
-            *cheat_idx = 0;
-            for i in 0..cheat_recording.len() {
-                cheat_recording[i] = CheatInputEvents::None;
-            }
+
+            cheat_code.reset();
         }
     } else {
         if cbar
