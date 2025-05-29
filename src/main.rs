@@ -4,8 +4,9 @@
 mod button;
 mod cbar;
 mod cheat_code;
-mod library;
+mod cheat_soundboard;
 mod pico;
+mod sound_library;
 mod wav;
 
 use cbar::Cbar;
