@@ -1,0 +1,5 @@
+- Refactor
+- Add non-blocking wav playback
+- Switch all swing sfx to non-blocking
+- Add some LED feedback on gpio13
+- Add the sound board

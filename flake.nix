@@ -30,6 +30,8 @@
           tokei
           blender
           kicad
+          librecad
+          freecad
           
           # dependencies
           flip-link

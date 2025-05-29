@@ -83,7 +83,7 @@ impl Pico {
             ButtonName::TiltTrigger => self.tilt_trigger_button.is_low().unwrap(),
             ButtonName::TiltReset => self.tilt_reset_button.is_low().unwrap(),
             ButtonName::MetalHit => self.black_button.is_low().unwrap(),
-            ButtonName::MeatHit => self.red_button.is_low().unwrap(),
+            ButtonName::BodyHit => self.red_button.is_low().unwrap(),
         }
     }
 
@@ -91,7 +91,7 @@ impl Pico {
         let sample_rate = wav.sample_rate;
         let cpu_delay_between_samples_in_us = 1_000_000 / sample_rate;
         let sound = wav.data_ref;
-        let data_start = 44;
+        let data_start = 0x2C;
         let mut data_end = data_start + wav.chunk_len;
         if data_end > sound.len() {
             data_end = sound.len();
@@ -141,6 +141,8 @@ impl Default for Pico {
 
         let led1 = pins.gpio18.into_push_pull_output();
         let led2 = pins.gpio19.into_push_pull_output();
+        let mut pwr_led = pins.gpio13.into_push_pull_output();
+        pwr_led.set_high().unwrap();
 
         let mut pwm_slices = bsp::hal::pwm::Slices::new(pac.PWM, &mut pac.RESETS);
 

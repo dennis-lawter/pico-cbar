@@ -4057,6 +4057,16 @@
 	)
 	(wire
 		(pts
+			(xy 146.05 114.3) (xy 154.94 114.3)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eecf44c0-eed0-46e0-947e-50845c1dbbeb")
+	)
+	(wire
+		(pts
 			(xy 48.26 53.34) (xy 30.48 53.34)
 		)
 		(stroke
@@ -4375,7 +4385,7 @@
 	)
 	(global_label "GP13"
 		(shape input)
-		(at 148.59 114.3 180)
+		(at 138.43 114.3 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -4385,7 +4395,7 @@
 		)
 		(uuid "632c7478-465c-4a1f-bb83-2199bfeedca7")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 140.6458 114.3 0)
+			(at 130.4858 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5512,7 +5522,7 @@
 				)
 			)
 		)
-		(property "Value" "1kohm"
+		(property "Value" "100 ohm"
 			(at 158.75 110.49 90)
 			(effects
 				(font
@@ -5634,7 +5644,7 @@
 	)
 	(symbol
 		(lib_id "Device:D")
-		(at 152.4 114.3 180)
+		(at 142.24 114.3 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5642,16 +5652,16 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "5aa7dbfd-8a2b-48a6-b0f6-0c0068eb717b")
-		(property "Reference" "D3"
-			(at 152.4 107.95 0)
+		(property "Reference" "LED2"
+			(at 142.24 107.95 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 			)
 		)
-		(property "Value" "D"
-			(at 152.4 110.49 0)
+		(property "Value" "ON INDICATOR (RED)"
+			(at 142.24 110.49 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5659,7 +5669,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 152.4 114.3 0)
+			(at 142.24 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5668,7 +5678,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 152.4 114.3 0)
+			(at 142.24 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5677,7 +5687,7 @@
 			)
 		)
 		(property "Description" "Diode"
-			(at 152.4 114.3 0)
+			(at 142.24 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5686,7 +5696,7 @@
 			)
 		)
 		(property "Sim.Device" "D"
-			(at 152.4 114.3 0)
+			(at 142.24 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5695,7 +5705,7 @@
 			)
 		)
 		(property "Sim.Pins" "1=K 2=A"
-			(at 152.4 114.3 0)
+			(at 142.24 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5712,7 +5722,7 @@
 		(instances
 			(project "cbar"
 				(path "/32f70377-46f3-4517-9f26-9d1b4abc6052"
-					(reference "D3")
+					(reference "LED2")
 					(unit 1)
 				)
 			)
@@ -6589,7 +6599,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "1kohm"
+		(property "Value" "9.8kohm"
 			(at 50.8 38.0999 0)
 			(effects
 				(font
@@ -6784,7 +6794,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "cdf54649-26bb-4109-b8a2-a1662a32104f")
-		(property "Reference" "D1"
+		(property "Reference" "LED1"
 			(at 52.07 29.5274 90)
 			(effects
 				(font
@@ -6847,7 +6857,7 @@
 		(instances
 			(project ""
 				(path "/32f70377-46f3-4517-9f26-9d1b4abc6052"
-					(reference "D1")
+					(reference "LED1")
 					(unit 1)
 				)
 			)

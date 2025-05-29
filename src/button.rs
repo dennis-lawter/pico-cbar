@@ -5,7 +5,7 @@ pub enum ButtonName {
     TiltTrigger,
     TiltReset,
     MetalHit,
-    MeatHit,
+    BodyHit,
 }
 pub struct Button {
     pub name: ButtonName,
