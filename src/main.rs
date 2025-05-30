@@ -57,13 +57,9 @@ fn main_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -
 
     if cbar.metal_btn.closed_us == US_REQUIRED_FOR_VALID_PRESS {
         cheat_code.add_event(CheatInputEvents::MetalDown);
-    } else if cbar.metal_btn.open_us == US_REQUIRED_FOR_VALID_PRESS {
-        cheat_code.add_event(CheatInputEvents::MetalUp);
     }
     if cbar.body_btn.closed_us == US_REQUIRED_FOR_VALID_PRESS {
         cheat_code.add_event(CheatInputEvents::BodyDown);
-    } else if cbar.body_btn.open_us == US_REQUIRED_FOR_VALID_PRESS {
-        cheat_code.add_event(CheatInputEvents::BodyUp);
     }
 
     if cbar.swing_primed {

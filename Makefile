@@ -11,4 +11,3 @@ fmt:
 	rustfmt src/*.rs
 init:
 	rustup target add thumbv6m-none-eabi
-

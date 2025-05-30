@@ -1,21 +1,16 @@
 pub struct CheatCodeRecord {
-    record: [CheatInputEvents; 16],
+    record: [CheatInputEvents; 8],
     idx: usize,
 }
 impl Default for CheatCodeRecord {
     fn default() -> Self {
-        let record = [const { CheatInputEvents::None }; 16];
+        let record = [const { CheatInputEvents::None }; 8];
         Self { record, idx: 0 }
     }
 }
 impl CheatCodeRecord {
     pub fn add_event(&mut self, event: CheatInputEvents) {
         if self.idx >= self.record.len() {
-            // Guard: don't write past the buffer's end
-            return;
-        }
-        if self.idx == 0 && event.is_release_type() {
-            // Guard: don't start recording on a button release
             return;
         }
         self.record[self.idx] = event;
@@ -45,39 +40,78 @@ impl CheatCodeRecord {
 #[derive(PartialEq, Eq)]
 pub enum CheatInputEvents {
     MetalDown,
-    MetalUp,
     BodyDown,
-    BodyUp,
 
     None,
 }
-impl CheatInputEvents {
-    fn is_release_type(&self) -> bool {
-        match self {
-            CheatInputEvents::MetalUp | CheatInputEvents::BodyUp => true,
-            _ => false,
-        }
-    }
-}
-const CHEAT_CODE: [CheatInputEvents; 16] = [
-    // MM
+
+const CHEAT_CODE: [CheatInputEvents; 8] = [
+    // MMBB
     CheatInputEvents::MetalDown,
-    CheatInputEvents::MetalUp,
     CheatInputEvents::MetalDown,
-    CheatInputEvents::MetalUp,
-    // BB
     CheatInputEvents::BodyDown,
-    CheatInputEvents::BodyUp,
     CheatInputEvents::BodyDown,
-    CheatInputEvents::BodyUp,
+    // MBMB
+    CheatInputEvents::MetalDown,
+    CheatInputEvents::BodyDown,
+    CheatInputEvents::MetalDown,
+    CheatInputEvents::BodyDown,
+];
+
+const BARNEY_SMELL: [CheatInputEvents; 2] = [
     // MB
     CheatInputEvents::MetalDown,
-    CheatInputEvents::MetalUp,
     CheatInputEvents::BodyDown,
-    CheatInputEvents::BodyUp,
-    // MB
+];
+
+const BARNEY_DRINK: [CheatInputEvents; 3] = [
+    // MMB
     CheatInputEvents::MetalDown,
-    CheatInputEvents::MetalUp,
+    CheatInputEvents::MetalDown,
     CheatInputEvents::BodyDown,
-    CheatInputEvents::BodyUp,
+];
+
+const BARNEY_FUNNY: [CheatInputEvents; 4] = [
+    // MMMB
+    CheatInputEvents::MetalDown,
+    CheatInputEvents::MetalDown,
+    CheatInputEvents::MetalDown,
+    CheatInputEvents::BodyDown,
+];
+
+const BARNEY_DRINK: [CheatInputEvents; 4] = [
+    // MMMM
+    CheatInputEvents::MetalDown,
+    CheatInputEvents::MetalDown,
+    CheatInputEvents::MetalDown,
+    CheatInputEvents::MetalDown,
+];
+
+const SCIENTIST_SMELL: [CheatInputEvents; 2] = [
+    // BM
+    CheatInputEvents::BodyDown,
+    CheatInputEvents::MetalDown,
+];
+
+const SCIENTIST_DRINK: [CheatInputEvents; 3] = [
+    // BBM
+    CheatInputEvents::BodyDown,
+    CheatInputEvents::BodyDown,
+    CheatInputEvents::MetalDown,
+];
+
+const SCIENTIST_FUNNY: [CheatInputEvents; 4] = [
+    // BBBM
+    CheatInputEvents::BodyDown,
+    CheatInputEvents::BodyDown,
+    CheatInputEvents::BodyDown,
+    CheatInputEvents::MetalDown,
+];
+
+const SCIENTIST_DRINK: [CheatInputEvents; 4] = [
+    // BBBB
+    CheatInputEvents::BodyDown,
+    CheatInputEvents::BodyDown,
+    CheatInputEvents::BodyDown,
+    CheatInputEvents::BodyDown,
 ];
