@@ -17,6 +17,9 @@ use rp_pico as bsp;
 
 use bsp::entry;
 
+use crate::cheat_code::CHEAT_CODE;
+// use crate::cheat_soundboard::Soundboard;
+
 const US_REQUIRED_FOR_VALID_PRESS: usize = 10_000; // 1/100th of a second
 
 enum States {
@@ -36,7 +39,7 @@ fn main() -> ! {
     loop {
         state = match state {
             States::Main => main_state_loop(&mut cbar, &mut cheat_code_record),
-            States::Cheat => cheat_state_loop(&mut cbar),
+            States::Cheat => cheat_state_loop(&mut cbar, &mut cheat_code_record),
         };
     }
 }
@@ -44,13 +47,14 @@ fn main() -> ! {
 fn main_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -> States {
     cbar.tick();
 
-    match cheat_code.validate() {
+    match cheat_code.validate(&CHEAT_CODE) {
         Some(true) => {
-            cbar.pico.play_wav_blocking(&cbar.snd_lib.uwish);
+            cbar.pico.play_wav_blocking(&cbar.soundboard.snd_lib.uwish);
+            cheat_code.reset();
             return States::Cheat;
         }
         Some(false) => {
-            cbar.pico.play_wav_blocking(&cbar.snd_lib.wrong);
+            cbar.pico.play_wav_blocking(&cbar.soundboard.snd_lib.wrong);
         }
         None => {}
     }
@@ -95,7 +99,40 @@ fn main_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -
     States::Main
 }
 
-fn cheat_state_loop(_cbar: &mut Cbar) -> States {
+fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -> States {
+    cbar.tick();
+
+    if cbar.metal_btn.closed_us == US_REQUIRED_FOR_VALID_PRESS {
+        cheat_code.add_event(CheatInputEvents::MetalDown);
+    }
+    if cbar.body_btn.closed_us == US_REQUIRED_FOR_VALID_PRESS {
+        cheat_code.add_event(CheatInputEvents::BodyDown);
+    }
+
+    match cheat_code.validate(&cheat_code::BARNEY_SMELL) {
+        None => {}
+        Some(true) => {
+            cbar.pico
+                .play_wav_blocking(&cbar.soundboard.snd_lib.ba_badfeeling);
+            // let sb = &mut cbar.soundboard;
+            // let pico = &mut cbar.pico;
+            // sb.ba_smell.play_next(pico);
+            // cbar.soundboard.ba_smell.play_next(&mut cbar.pico);
+            cheat_code.reset();
+        }
+        Some(false) => {
+            cbar.pico
+                .play_wav_blocking(&cbar.soundboard.snd_lib.ba_beertopside);
+            cheat_code.reset();
+        }
+    }
+
+    match cheat_code.validate(&cheat_code::BARNEY_DRINK) {
+        None => {}
+        Some(true) => {}
+        Some(false) => {}
+    }
+
     States::Cheat
 }
 
@@ -105,18 +142,29 @@ fn play_some_sound(cbar: &mut Cbar) {
 
     if metal_btn_down {
         match cbar.loop_count % 2 {
-            0 => cbar.pico.play_wav_blocking(&cbar.snd_lib.cbar_hit1),
-            1 => cbar.pico.play_wav_blocking(&cbar.snd_lib.cbar_hit2),
+            0 => cbar
+                .pico
+                .play_wav_blocking(&cbar.soundboard.snd_lib.cbar_hit1),
+            1 => cbar
+                .pico
+                .play_wav_blocking(&cbar.soundboard.snd_lib.cbar_hit2),
             _ => {}
         };
     } else if body_btn_down {
         match cbar.loop_count % 3 {
-            0 => cbar.pico.play_wav_blocking(&cbar.snd_lib.cbar_hitbod1),
-            1 => cbar.pico.play_wav_blocking(&cbar.snd_lib.cbar_hitbod2),
-            2 => cbar.pico.play_wav_blocking(&cbar.snd_lib.cbar_hitbod3),
+            0 => cbar
+                .pico
+                .play_wav_blocking(&cbar.soundboard.snd_lib.cbar_hitbod1),
+            1 => cbar
+                .pico
+                .play_wav_blocking(&cbar.soundboard.snd_lib.cbar_hitbod2),
+            2 => cbar
+                .pico
+                .play_wav_blocking(&cbar.soundboard.snd_lib.cbar_hitbod3),
             _ => {}
         }
     } else {
-        cbar.pico.play_wav_blocking(&cbar.snd_lib.cbar_miss1);
+        cbar.pico
+            .play_wav_blocking(&cbar.soundboard.snd_lib.cbar_miss1);
     }
 }

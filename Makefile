@@ -1,3 +1,7 @@
+check:
+	cargo check -Zbuild-std --target thumbv6m-none-eabi
+clippy:
+	cargo clippy -Zbuild-std --target thumbv6m-none-eabi
 build:
 	cargo build --release -Zbuild-std --target thumbv6m-none-eabi
 run: build

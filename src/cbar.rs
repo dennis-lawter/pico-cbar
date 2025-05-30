@@ -1,7 +1,9 @@
 use crate::button::Button;
 use crate::button::ButtonName;
+// use crate::cheat_soundboard;
+use crate::cheat_soundboard::Soundboard;
 use crate::pico::Pico;
-use crate::sound_library::SoundLibrary;
+// use crate::sound_library::SoundLibrary;
 // use crate::library::Library;
 // use crate::pico;
 // use crate::pico::Pico;
@@ -12,9 +14,10 @@ pub struct Cbar<'a> {
     pub body_btn: Button,
     pub trigger_btn: Button,
     pub reset_btn: Button,
-    pub snd_lib: SoundLibrary<'a>,
+    // pub snd_lib: SoundLibrary<'a>,
     pub loop_count: usize,
     pub swing_primed: bool,
+    pub soundboard: Soundboard<'a>,
 }
 impl Default for Cbar<'static> {
     fn default() -> Self {
@@ -25,7 +28,9 @@ impl Default for Cbar<'static> {
         let trigger_btn = Button::new(ButtonName::TiltTrigger);
         let reset_btn = Button::new(ButtonName::TiltReset);
 
-        let snd_lib = SoundLibrary::default();
+        // let snd_lib = SoundLibrary::default();
+
+        let soundboard = Soundboard::new();
 
         let loop_count = 0usize;
         let swing_primed = true;
@@ -36,9 +41,10 @@ impl Default for Cbar<'static> {
             body_btn,
             trigger_btn,
             reset_btn,
-            snd_lib,
+            // snd_lib,
             loop_count,
             swing_primed,
+            soundboard,
         }
     }
 }

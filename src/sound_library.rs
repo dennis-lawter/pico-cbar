@@ -35,7 +35,7 @@ include_wav!(BA_BEERTOPSIDE, "../sfx/barney/beertopside.wav");
 // Barney's iconic voice lines
 include_wav!(BA_BADAREA, "../sfx/barney/badarea.wav");
 include_wav!(BA_BADFEELING, "../sfx/barney/badfeeling.wav");
-include_wav!(BA_DOTOYOU, "../sfx/barney/ba_dotoyou.wav");
+// include_wav!(BA_DOTOYOU, "../sfx/barney/ba_dotoyou.wav");
 include_wav!(BA_SENDIT, "../sfx/barney/c3a1_ba_3sat.wav");
 include_wav!(BA_SURVIVE, "../sfx/barney/survive.wav");
 include_wav!(BA_WHATSGOINGON, "../sfx/barney/whatsgoingon.wav");
@@ -45,7 +45,7 @@ include_wav!(BA_YOUTALKMUCH, "../sfx/barney/youtalkmuch.wav");
 include_wav!(BA_DIE1, "../sfx/barney/ba_die1.wav");
 include_wav!(BA_DIE2, "../sfx/barney/ba_die2.wav");
 include_wav!(BA_DIE3, "../sfx/barney/ba_die3.wav");
-include_wav!(BA_PAIN1, "../sfx/barney/ba_pain1.wav");
+// include_wav!(BA_PAIN1, "../sfx/barney/ba_pain1.wav");
 include_wav!(BA_PAIN2, "../sfx/barney/ba_pain2.wav");
 include_wav!(BA_PAIN3, "../sfx/barney/ba_pain3.wav");
 
@@ -63,8 +63,8 @@ include_wav!(SCI_HUNGRYYET, "../sfx/scientist/hungryyet.wav");
 include_wav!(SCI_NEEDSLEEP, "../sfx/scientist/needsleep.wav");
 
 // Scientist iconic voice lines
-include_wav!(SCI_FOOL, "../sfx/scientist/c3a2_sci_fool.wav");
-include_wav!(SCI_DONTWANTDIE, "../sfx/scientist/dontwantdie.wav");
+// include_wav!(SCI_FOOL, "../sfx/scientist/c3a2_sci_fool.wav");
+// include_wav!(SCI_DONTWANTDIE, "../sfx/scientist/dontwantdie.wav");
 include_wav!(SCI_DONUTEATER, "../sfx/scientist/donuteater.wav");
 include_wav!(SCI_EXCELLENTTEAM, "../sfx/scientist/excellentteam.wav");
 include_wav!(SCI_HIDEGLASSES, "../sfx/scientist/hideglasses.wav");
@@ -77,8 +77,8 @@ include_wav!(SCI_SCREAM2, "../sfx/scientist/scream2.wav");
 include_wav!(SCI_SCREAM3, "../sfx/scientist/scream3.wav");
 include_wav!(SCI_SCREAM4, "../sfx/scientist/scream4.wav");
 include_wav!(SCI_SCREAM5, "../sfx/scientist/scream5.wav");
-include_wav!(SCI_SCREAM6, "../sfx/scientist/scream6.wav");
-include_wav!(SCI_SCREAM7, "../sfx/scientist/scream7.wav");
+// include_wav!(SCI_SCREAM6, "../sfx/scientist/scream6.wav");
+// include_wav!(SCI_SCREAM7, "../sfx/scientist/scream7.wav");
 
 pub struct SoundLibrary<'a> {
     pub cbar_hit1: Wav<'a>,
@@ -102,9 +102,9 @@ pub struct SoundLibrary<'a> {
     pub ba_longnite: Wav<'a>,
     pub ba_beertopside: Wav<'a>,
 
-    pub ba_badarea: Wav<'a>,
+    // pub ba_badarea: Wav<'a>,
     pub ba_badfeeling: Wav<'a>,
-    pub ba_dotoyou: Wav<'a>,
+    // pub ba_dotoyou: Wav<'a>,
     pub ba_sendit: Wav<'a>,
     pub ba_survive: Wav<'a>,
     pub ba_whatsgoingon: Wav<'a>,
@@ -113,7 +113,7 @@ pub struct SoundLibrary<'a> {
     pub ba_die1: Wav<'a>,
     pub ba_die2: Wav<'a>,
     pub ba_die3: Wav<'a>,
-    pub ba_pain1: Wav<'a>,
+    // pub ba_pain1: Wav<'a>,
     pub ba_pain2: Wav<'a>,
     pub ba_pain3: Wav<'a>,
 
@@ -127,8 +127,8 @@ pub struct SoundLibrary<'a> {
     pub sci_hungryyet: Wav<'a>,
     pub sci_needsleep: Wav<'a>,
 
-    pub sci_fool: Wav<'a>,
-    pub sci_dontwantdie: Wav<'a>,
+    // pub sci_fool: Wav<'a>,
+    // pub sci_dontwantdie: Wav<'a>,
     pub sci_donuteater: Wav<'a>,
     pub sci_excellentteam: Wav<'a>,
     pub sci_hideglasses: Wav<'a>,
@@ -140,8 +140,8 @@ pub struct SoundLibrary<'a> {
     pub sci_scream3: Wav<'a>,
     pub sci_scream4: Wav<'a>,
     pub sci_scream5: Wav<'a>,
-    pub sci_scream6: Wav<'a>,
-    pub sci_scream7: Wav<'a>,
+    // pub sci_scream6: Wav<'a>,
+    // pub sci_scream7: Wav<'a>,
 }
 impl Default for SoundLibrary<'static> {
     fn default() -> Self {
@@ -161,9 +161,9 @@ impl Default for SoundLibrary<'static> {
             ba_later: Wav::new(BA_LATER),
             ba_longnite: Wav::new(BA_LONGNITE),
             ba_beertopside: Wav::new(BA_BEERTOPSIDE),
-            ba_badarea: Wav::new(BA_BADAREA),
+            // ba_badarea: Wav::new(BA_BADAREA),
             ba_badfeeling: Wav::new(BA_BADFEELING),
-            ba_dotoyou: Wav::new(BA_DOTOYOU),
+            // ba_dotoyou: Wav::new(BA_DOTOYOU),
             ba_sendit: Wav::new(BA_SENDIT),
             ba_survive: Wav::new(BA_SURVIVE),
             ba_whatsgoingon: Wav::new(BA_WHATSGOINGON),
@@ -171,7 +171,7 @@ impl Default for SoundLibrary<'static> {
             ba_die1: Wav::new(BA_DIE1),
             ba_die2: Wav::new(BA_DIE2),
             ba_die3: Wav::new(BA_DIE3),
-            ba_pain1: Wav::new(BA_PAIN1),
+            // ba_pain1: Wav::new(BA_PAIN1),
             ba_pain2: Wav::new(BA_PAIN2),
             ba_pain3: Wav::new(BA_PAIN3),
             sci_doyousmell: Wav::new(SCI_DOYOUSMELL),
@@ -182,8 +182,8 @@ impl Default for SoundLibrary<'static> {
             sci_seencup: Wav::new(SCI_SEENCUP),
             sci_hungryyet: Wav::new(SCI_HUNGRYYET),
             sci_needsleep: Wav::new(SCI_NEEDSLEEP),
-            sci_fool: Wav::new(SCI_FOOL),
-            sci_dontwantdie: Wav::new(SCI_DONTWANTDIE),
+            // sci_fool: Wav::new(SCI_FOOL),
+            // sci_dontwantdie: Wav::new(SCI_DONTWANTDIE),
             sci_donuteater: Wav::new(SCI_DONUTEATER),
             sci_excellentteam: Wav::new(SCI_EXCELLENTTEAM),
             sci_hideglasses: Wav::new(SCI_HIDEGLASSES),
@@ -194,8 +194,8 @@ impl Default for SoundLibrary<'static> {
             sci_scream3: Wav::new(SCI_SCREAM3),
             sci_scream4: Wav::new(SCI_SCREAM4),
             sci_scream5: Wav::new(SCI_SCREAM5),
-            sci_scream6: Wav::new(SCI_SCREAM6),
-            sci_scream7: Wav::new(SCI_SCREAM7),
+            // sci_scream6: Wav::new(SCI_SCREAM6),
+            // sci_scream7: Wav::new(SCI_SCREAM7),
         }
     }
 }

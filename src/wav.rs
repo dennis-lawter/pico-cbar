@@ -1,4 +1,5 @@
 #[allow(dead_code)]
+#[derive(Clone)]
 pub struct Wav<'a> {
     pub sample_rate: u32,
     pub data_ref: &'a [u8],
