@@ -1,15 +1,17 @@
-use crate::pico::Pico;
+// use crate::pico::Pico;
 use crate::sound_library::SoundLibrary;
 use crate::wav::Wav;
 
+const MAX_PLAYLIST_SIZE: u8 = 6;
+
 pub struct Playlist<'a> {
     index: u8,
-    sounds: [Option<Wav<'a>>; 6],
+    pub sounds: [Option<Wav<'a>>; MAX_PLAYLIST_SIZE as usize],
     length: u8,
 }
 impl Playlist<'static> {
     fn new() -> Self {
-        let sounds = [const { None }; 6];
+        let sounds = [const { None }; MAX_PLAYLIST_SIZE as usize];
         Self {
             index: 0u8,
             sounds,
@@ -18,25 +20,35 @@ impl Playlist<'static> {
     }
 
     fn insert(&mut self, sound: &Wav<'static>) -> Result<(), ()> {
-        if self.length >= 16 {
+        if self.length >= MAX_PLAYLIST_SIZE {
             return Err(());
         }
         self.sounds[self.length as usize] = Some(sound.clone());
+        self.length += 1;
         Ok(())
     }
 
-    pub fn play_next(&mut self, pico: &mut Pico) {
-        if self.sounds[self.index as usize].is_none() {
+    pub fn get_next(&mut self) -> Wav<'static> {
+        if self.index >= self.length || self.sounds[self.index as usize].is_none() {
             self.index = 0;
         }
-        let wav = &self.sounds[self.index as usize].clone().unwrap();
-        pico.play_wav_blocking(wav);
+        let wav = self.sounds[self.index as usize].clone().unwrap().clone();
         self.index += 1;
+        wav
     }
+
+    // pub fn get_rand(&mut self, index: usize) -> Wav<'static> {
+    //     let index = index % self.length as usize;
+    //     self.sounds[index as usize].clone().unwrap()
+    // }
 }
 
 pub struct Soundboard<'a> {
     pub snd_lib: SoundLibrary<'a>,
+
+    pub cbar_miss: Playlist<'a>,
+    pub cbar_metal: Playlist<'a>,
+    pub cbar_body: Playlist<'a>,
 
     pub ba_smell: Playlist<'a>,
     pub ba_drink: Playlist<'a>,
@@ -51,6 +63,17 @@ pub struct Soundboard<'a> {
 impl Soundboard<'static> {
     pub fn new() -> Self {
         let snd_lib = SoundLibrary::default();
+
+        let mut cbar_miss = Playlist::new();
+        cbar_miss.insert(&snd_lib.cbar_miss1).unwrap();
+        let mut cbar_metal = Playlist::new();
+        cbar_metal.insert(&snd_lib.cbar_hit1).unwrap();
+        cbar_metal.insert(&snd_lib.cbar_hit2).unwrap();
+        let mut cbar_body = Playlist::new();
+        cbar_body.insert(&snd_lib.cbar_hitbod1).unwrap();
+        cbar_body.insert(&snd_lib.cbar_hitbod2).unwrap();
+        cbar_body.insert(&snd_lib.cbar_hitbod3).unwrap();
+
         let mut ba_smell = Playlist::new();
         ba_smell.insert(&snd_lib.ba_somethingdied).unwrap();
         ba_smell.insert(&snd_lib.ba_somethingstinky).unwrap();
@@ -104,6 +127,9 @@ impl Soundboard<'static> {
         // sci_scream.insert(&snd_lib.sci_scream7).unwrap();
 
         Self {
+            cbar_miss,
+            cbar_metal,
+            cbar_body,
             snd_lib,
             ba_smell,
             ba_drink,

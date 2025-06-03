@@ -77,6 +77,17 @@ fn main_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -
             // For debugging, LEDs both go on then off during sound playback
             cbar.pico.set_led_state(pico::LedNames::Led1, true);
             cbar.pico.set_led_state(pico::LedNames::Led2, true);
+
+            // let wav = if cbar.metal_btn.is_button_down() {
+            //     cbar.soundboard.cbar_metal.get_rand(cbar.loop_count)
+            // } else if cbar.body_btn.is_button_down() {
+            //     cbar.soundboard.cbar_body.get_rand(cbar.loop_count)
+            // } else {
+            //     cbar.soundboard.cbar_miss.get_rand(cbar.loop_count)
+            // };
+
+            // cbar.pico.play_wav_blocking(&wav);
+
             play_some_sound(cbar);
             cbar.pico.set_led_state(pico::LedNames::Led1, false);
             cbar.pico.set_led_state(pico::LedNames::Led2, false);
@@ -112,8 +123,9 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
     match cheat_code.validate(&cheat_code::BARNEY_SMELL) {
         None => {}
         Some(true) => {
-            cbar.pico
-                .play_wav_blocking(&cbar.soundboard.snd_lib.ba_badfeeling);
+            let test = cbar.soundboard.sci_drink.sounds[0].clone().unwrap().clone();
+            // let test = cbar.soundboard.sci_drink.get_next().clone();
+            cbar.pico.play_wav_blocking(&test);
             // let sb = &mut cbar.soundboard;
             // let pico = &mut cbar.pico;
             // sb.ba_smell.play_next(pico);
@@ -140,7 +152,9 @@ fn play_some_sound(cbar: &mut Cbar) {
     let metal_btn_down = cbar.metal_btn.is_button_down();
     let body_btn_down = cbar.body_btn.is_button_down();
 
+    /*let wav = */
     if metal_btn_down {
+        // cbar.soundboard.cbar_metal.get_rand(cbar.loop_count)
         match cbar.loop_count % 2 {
             0 => cbar
                 .pico
@@ -151,6 +165,7 @@ fn play_some_sound(cbar: &mut Cbar) {
             _ => {}
         };
     } else if body_btn_down {
+        // cbar.soundboard.cbar_body.get_rand(cbar.loop_count)
         match cbar.loop_count % 3 {
             0 => cbar
                 .pico
@@ -164,7 +179,10 @@ fn play_some_sound(cbar: &mut Cbar) {
             _ => {}
         }
     } else {
+        // cbar.soundboard.cbar_miss.get_rand(cbar.loop_count)
         cbar.pico
             .play_wav_blocking(&cbar.soundboard.snd_lib.cbar_miss1);
-    }
+    } //;
+
+    // cbar.pico.play_wav_blocking(&wav)
 }
