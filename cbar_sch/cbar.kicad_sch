@@ -5522,7 +5522,7 @@
 				)
 			)
 		)
-		(property "Value" "100 ohm"
+		(property "Value" "980 ohm"
 			(at 158.75 110.49 90)
 			(effects
 				(font
