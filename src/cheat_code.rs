@@ -20,7 +20,6 @@ impl CheatCodeRecord {
         if self.idx == pattern.len() {
             for i in 0..pattern.len() {
                 if self.record[i] != pattern[i] {
-                    self.reset();
                     return Some(false);
                 }
             }

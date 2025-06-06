@@ -1,5 +1,3 @@
-use crate::wav::Wav;
-
 macro_rules! include_wav {
     ($name:ident, $path:expr) => {
         pub const $name: &[u8] = include_bytes!($path);

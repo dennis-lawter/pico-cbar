@@ -19,7 +19,7 @@ impl<'a> Playlist<'a> {
         if self.length >= MAX_PLAYLIST_SIZE {
             return Err(());
         }
-        self.sounds[self.length as usize] = Some(sound.clone());
+        self.sounds[self.length as usize] = Some(sound);
         self.length += 1;
         Ok(())
     }
@@ -33,17 +33,18 @@ impl<'a> Playlist<'a> {
         wav
     }
 
-    pub fn get_rand(&mut self, index_seed: usize) -> &'a [u8] {
-        let index = index_seed % self.length as usize;
-        self.sounds[index as usize].clone().unwrap()
+    pub fn get_by_index(&mut self, index: usize) -> &'a [u8] {
+        let bound_index = index % self.length as usize;
+        self.sounds[bound_index as usize].clone().unwrap()
     }
 }
 
 pub struct Soundboard<'a> {
-    // pub snd_lib: SoundLibrary<'a>,
     pub cbar_miss: Playlist<'a>,
     pub cbar_metal: Playlist<'a>,
     pub cbar_body: Playlist<'a>,
+
+    pub cheat_entry: Playlist<'a>,
 
     pub ba_smell: Playlist<'a>,
     pub ba_drink: Playlist<'a>,
@@ -75,6 +76,10 @@ impl Soundboard<'static> {
             .insert(crate::sound_library::CBAR_HITBOD3)
             .unwrap();
 
+        let mut cheat_entry = Playlist::new();
+        cheat_entry.insert(crate::sound_library::BUTTON2).unwrap();
+        cheat_entry.insert(crate::sound_library::UWISH).unwrap();
+
         let mut ba_smell = Playlist::new();
         ba_smell
             .insert(crate::sound_library::BA_SOMETHINGDIED)
@@ -91,7 +96,7 @@ impl Soundboard<'static> {
             .insert(crate::sound_library::BA_BEERTOPSIDE)
             .unwrap();
         let mut ba_funny = Playlist::new();
-        // ba_funny.insert(crate::sound_library::BA_BADAREA).unwrap();
+        ba_funny.insert(crate::sound_library::BA_BADAREA).unwrap();
         ba_funny
             .insert(crate::sound_library::BA_BADFEELING)
             .unwrap();
@@ -173,7 +178,7 @@ impl Soundboard<'static> {
             cbar_miss,
             cbar_metal,
             cbar_body,
-            // snd_lib,
+            cheat_entry,
             ba_smell,
             ba_drink,
             ba_funny,

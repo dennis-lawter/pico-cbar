@@ -47,12 +47,17 @@ fn main_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -
 
     match cheat_code.validate(&CHEAT_CODE) {
         Some(true) => {
-            // cbar.pico.play_wav_blocking(&cbar.soundboard.snd_lib.uwish);
+            let wavdat = cbar.soundboard.cheat_entry.get_by_index(1);
+            let wav = Wav::new(wavdat);
+            cbar.pico.play_wav_blocking(&wav);
             cheat_code.reset();
             return States::Cheat;
         }
         Some(false) => {
-            // cbar.pico.play_wav_blocking(&cbar.soundboard.snd_lib.wrong);
+            let wavdat = cbar.soundboard.cheat_entry.get_by_index(0);
+            let wav = Wav::new(wavdat);
+            cbar.pico.play_wav_blocking(&wav);
+            cheat_code.reset();
         }
         None => {}
     }
@@ -64,49 +69,43 @@ fn main_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -
         cheat_code.add_event(CheatInputEvents::BodyDown);
     }
 
-    if cbar.swing_primed {
-        if cbar
-            .trigger_btn
-            .is_button_held_past_limit(US_REQUIRED_FOR_VALID_PRESS)
-            && cbar
-                .reset_btn
-                .is_button_released_past_limit(US_REQUIRED_FOR_VALID_PRESS)
-        {
-            // For debugging, LEDs both go on then off during sound playback
-            cbar.pico.set_led_state(pico::LedNames::Led1, true);
-            cbar.pico.set_led_state(pico::LedNames::Led2, true);
+    let trigger_valid_press = cbar
+        .trigger_btn
+        .is_button_held_past_limit(US_REQUIRED_FOR_VALID_PRESS);
+    let trigger_valid_release = cbar
+        .trigger_btn
+        .is_button_released_past_limit(US_REQUIRED_FOR_VALID_PRESS);
+    let reset_valid_press = cbar
+        .reset_btn
+        .is_button_held_past_limit(US_REQUIRED_FOR_VALID_PRESS);
+    let reset_valid_release = cbar
+        .reset_btn
+        .is_button_released_past_limit(US_REQUIRED_FOR_VALID_PRESS);
 
-            // let wav = if cbar.metal_btn.is_button_down() {
-            //     cbar.soundboard.cbar_metal.get_rand(cbar.loop_count)
-            // } else if cbar.body_btn.is_button_down() {
-            //     cbar.soundboard.cbar_body.get_rand(cbar.loop_count)
-            // } else {
-            //     cbar.soundboard.cbar_miss.get_rand(cbar.loop_count)
-            // };
+    if cbar.swing_primed && trigger_valid_press && reset_valid_release {
+        // For debugging, LEDs both go on then off during sound playback
+        cbar.pico.set_led_state(pico::LedNames::Led1, true);
+        cbar.pico.set_led_state(pico::LedNames::Led2, true);
 
-            // cbar.pico.play_wav_blocking(&wav);
+        let wavdata = if cbar.metal_btn.is_button_down() {
+            cbar.soundboard.cbar_metal.get_by_index(cbar.loop_count)
+        } else if cbar.body_btn.is_button_down() {
+            cbar.soundboard.cbar_body.get_by_index(cbar.loop_count)
+        } else {
+            cbar.soundboard.cbar_miss.get_by_index(cbar.loop_count)
+        };
 
-            // play_some_sound(cbar);
-            let wavdat = cbar.soundboard.ba_drink.get_rand(cbar.loop_count);
-            let wav = Wav::new(wavdat);
-            cbar.pico.play_wav_blocking(&wav);
-            // cbar.pico.delay.delay_ms(1000);
-            cbar.pico.set_led_state(pico::LedNames::Led1, false);
-            cbar.pico.set_led_state(pico::LedNames::Led2, false);
-            cbar.swing_primed = false;
+        let wav = Wav::new(wavdata);
+        cbar.pico.play_wav_blocking(&wav);
+        cbar.swing_primed = false;
 
-            cheat_code.reset();
-        }
-    } else {
-        if cbar
-            .reset_btn
-            .is_button_held_past_limit(US_REQUIRED_FOR_VALID_PRESS)
-            && cbar
-                .trigger_btn
-                .is_button_released_past_limit(US_REQUIRED_FOR_VALID_PRESS)
-        {
-            cbar.swing_primed = true;
-        }
+        cheat_code.reset();
+
+        // turn off the debug leds
+        cbar.pico.set_led_state(pico::LedNames::Led1, false);
+        cbar.pico.set_led_state(pico::LedNames::Led2, false);
+    } else if reset_valid_press && trigger_valid_release {
+        cbar.swing_primed = true;
     }
 
     States::Main
@@ -125,67 +124,90 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
     match cheat_code.validate(&cheat_code::BARNEY_SMELL) {
         None => {}
         Some(true) => {
-            // let test = cbar.soundboard.sci_drink.sounds[0].clone().unwrap().clone();
-            let test = cbar.soundboard.sci_drink.get_next().clone();
+            let test = cbar.soundboard.ba_smell.get_next();
             let test_wav = Wav::new(test);
             cbar.pico.play_wav_blocking(&test_wav);
-            // let sb = &mut cbar.soundboard;
-            // let pico = &mut cbar.pico;
-            // sb.ba_smell.play_next(pico);
-            // cbar.soundboard.ba_smell.play_next(&mut cbar.pico);
             cheat_code.reset();
         }
-        Some(false) => {
-            // cbar.pico
-            //     .play_wav_blocking(&cbar.soundboard.snd_lib.ba_beertopside);
-            cheat_code.reset();
-        }
+        Some(false) => {}
     }
 
     match cheat_code.validate(&cheat_code::BARNEY_DRINK) {
         None => {}
-        Some(true) => {}
+        Some(true) => {
+            let test = cbar.soundboard.ba_drink.get_next();
+            let test_wav = Wav::new(test);
+            cbar.pico.play_wav_blocking(&test_wav);
+            cheat_code.reset();
+        }
+        Some(false) => {}
+    }
+
+    match cheat_code.validate(&cheat_code::BARNEY_FUNNY) {
+        None => {}
+        Some(true) => {
+            let test = cbar.soundboard.ba_funny.get_next();
+            let test_wav = Wav::new(test);
+            cbar.pico.play_wav_blocking(&test_wav);
+            cheat_code.reset();
+        }
+        Some(false) => {}
+    }
+
+    match cheat_code.validate(&cheat_code::BARNEY_SCREAM) {
+        None => {}
+        Some(true) => {
+            let test = cbar.soundboard.ba_scream.get_next();
+            let test_wav = Wav::new(test);
+            cbar.pico.play_wav_blocking(&test_wav);
+            cheat_code.reset();
+        }
+        Some(false) => {}
+    }
+
+    match cheat_code.validate(&cheat_code::SCIENTIST_SMELL) {
+        None => {}
+        Some(true) => {
+            let test = cbar.soundboard.sci_smell.get_next();
+            let test_wav = Wav::new(test);
+            cbar.pico.play_wav_blocking(&test_wav);
+            cheat_code.reset();
+        }
+        Some(false) => {}
+    }
+
+    match cheat_code.validate(&cheat_code::SCIENTIST_DRINK) {
+        None => {}
+        Some(true) => {
+            let test = cbar.soundboard.sci_drink.get_next();
+            let test_wav = Wav::new(test);
+            cbar.pico.play_wav_blocking(&test_wav);
+            cheat_code.reset();
+        }
+        Some(false) => {}
+    }
+
+    match cheat_code.validate(&cheat_code::SCIENTIST_FUNNY) {
+        None => {}
+        Some(true) => {
+            let test = cbar.soundboard.sci_funny.get_next();
+            let test_wav = Wav::new(test);
+            cbar.pico.play_wav_blocking(&test_wav);
+            cheat_code.reset();
+        }
+        Some(false) => {}
+    }
+
+    match cheat_code.validate(&cheat_code::SCIENTIST_SCREAM) {
+        None => {}
+        Some(true) => {
+            let test = cbar.soundboard.sci_scream.get_next();
+            let test_wav = Wav::new(test);
+            cbar.pico.play_wav_blocking(&test_wav);
+            cheat_code.reset();
+        }
         Some(false) => {}
     }
 
     States::Cheat
 }
-
-// fn play_some_sound(cbar: &mut Cbar) {
-//     let metal_btn_down = cbar.metal_btn.is_button_down();
-//     let body_btn_down = cbar.body_btn.is_button_down();
-
-//     /*let wav = */
-//     if metal_btn_down {
-//         // cbar.soundboard.cbar_metal.get_rand(cbar.loop_count)
-//         match cbar.loop_count % 2 {
-//             0 => cbar
-//                 .pico
-//                 .play_wav_blocking(&cbar.soundboard.snd_lib.cbar_hit1),
-//             1 => cbar
-//                 .pico
-//                 .play_wav_blocking(&cbar.soundboard.snd_lib.cbar_hit2),
-//             _ => {}
-//         };
-//     } else if body_btn_down {
-//         // cbar.soundboard.cbar_body.get_rand(cbar.loop_count)
-//         match cbar.loop_count % 3 {
-//             0 => cbar
-//                 .pico
-//                 .play_wav_blocking(&cbar.soundboard.snd_lib.cbar_hitbod1),
-//             1 => cbar
-//                 .pico
-//                 .play_wav_blocking(&cbar.soundboard.snd_lib.cbar_hitbod2),
-//             2 => cbar
-//                 .pico
-//                 .play_wav_blocking(&cbar.soundboard.snd_lib.cbar_hitbod3),
-//             _ => {}
-//         }
-//     } else {
-//         // cbar.soundboard.cbar_miss.get_rand(cbar.loop_count)
-//         cbar.pico
-//             .play_wav_blocking(&cbar.soundboard.snd_lib.cbar_miss1);
-//     } //;
-
-//     // cbar.pico.play_wav_blocking(&wav)
-// }
