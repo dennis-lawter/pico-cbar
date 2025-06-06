@@ -99,7 +99,6 @@ impl Pico {
         for i in data_start..data_end {
             self.set_amplitude(sound[i]);
 
-            // Wait to maintain sample rate
             self.delay.delay_us(cpu_delay_between_samples_in_us);
         }
         self.set_amplitude(0);
@@ -154,14 +153,6 @@ impl Default for Pico {
             let buzzer_channel_ptr =
                 &mut (*buzzer_pwm_slice_ptr).channel_a as *mut BuzzerPinChannel;
             (*buzzer_channel_ptr).output_to(pins.gpio4);
-
-            //let top: u64 = 65_535;
-            //let system_clock_freq: u64 = clocks.system_clock.freq().to_Hz() as u64;
-            //let target_pwm_freq: u64 = 22_050 * 256; // Match PWM frequency with sample rate
-
-            //let div_comb = (system_clock_freq * 16) / (target_pwm_freq * (top + 1));
-            //let div_int = (div_comb / 16) as u8;
-            //let div_frac = (div_comb % 16) as u8;
 
             let top = 512;
             let div_int = 1;

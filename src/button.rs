@@ -55,8 +55,4 @@ impl Button {
     pub fn is_button_down(&self) -> bool {
         self.closed_us > 0
     }
-
-    // pub fn is_button_up(&self) -> bool {
-    //     self.open_us > 0
-    // }
 }
