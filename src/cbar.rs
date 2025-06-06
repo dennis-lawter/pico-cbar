@@ -1,8 +1,8 @@
 use crate::button::Button;
 use crate::button::ButtonName;
 // use crate::cheat_soundboard;
-use crate::cheat_soundboard::Soundboard;
 use crate::pico::Pico;
+use crate::soundboard::Soundboard;
 // use crate::sound_library::SoundLibrary;
 // use crate::library::Library;
 // use crate::pico;
