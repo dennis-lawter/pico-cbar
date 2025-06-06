@@ -83,10 +83,6 @@ fn main_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -
         .is_button_released_past_limit(US_REQUIRED_FOR_VALID_PRESS);
 
     if cbar.swing_primed && trigger_valid_press && reset_valid_release {
-        // For debugging, LEDs both go on then off during sound playback
-        cbar.pico.set_led_state(pico::LedNames::Led1, true);
-        cbar.pico.set_led_state(pico::LedNames::Led2, true);
-
         let wavdata = if cbar.metal_btn.is_button_down() {
             cbar.soundboard.cbar_metal.get_by_index(cbar.loop_count)
         } else if cbar.body_btn.is_button_down() {
@@ -100,10 +96,6 @@ fn main_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -
         cbar.swing_primed = false;
 
         cheat_code.reset();
-
-        // turn off the debug leds
-        cbar.pico.set_led_state(pico::LedNames::Led1, false);
-        cbar.pico.set_led_state(pico::LedNames::Led2, false);
     } else if reset_valid_press && trigger_valid_release {
         cbar.swing_primed = true;
     }
@@ -113,6 +105,8 @@ fn main_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -
 
 fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -> States {
     cbar.tick();
+    let led_state = (cbar.loop_count / 100_000) % 2 == 0;
+    cbar.pico.set_led_state(led_state);
 
     if cbar.metal_btn.closed_us == US_REQUIRED_FOR_VALID_PRESS {
         cheat_code.add_event(CheatInputEvents::MetalDown);
@@ -124,6 +118,7 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
     match cheat_code.validate(&cheat_code::BARNEY_SMELL) {
         None => {}
         Some(true) => {
+            cbar.pico.set_led_state(true);
             let test = cbar.soundboard.ba_smell.get_next();
             let test_wav = Wav::new(test);
             cbar.pico.play_wav_blocking(&test_wav);
@@ -135,6 +130,7 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
     match cheat_code.validate(&cheat_code::BARNEY_DRINK) {
         None => {}
         Some(true) => {
+            cbar.pico.set_led_state(true);
             let test = cbar.soundboard.ba_drink.get_next();
             let test_wav = Wav::new(test);
             cbar.pico.play_wav_blocking(&test_wav);
@@ -146,6 +142,7 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
     match cheat_code.validate(&cheat_code::BARNEY_FUNNY) {
         None => {}
         Some(true) => {
+            cbar.pico.set_led_state(true);
             let test = cbar.soundboard.ba_funny.get_next();
             let test_wav = Wav::new(test);
             cbar.pico.play_wav_blocking(&test_wav);
@@ -157,6 +154,7 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
     match cheat_code.validate(&cheat_code::BARNEY_SCREAM) {
         None => {}
         Some(true) => {
+            cbar.pico.set_led_state(true);
             let test = cbar.soundboard.ba_scream.get_next();
             let test_wav = Wav::new(test);
             cbar.pico.play_wav_blocking(&test_wav);
@@ -168,6 +166,7 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
     match cheat_code.validate(&cheat_code::SCIENTIST_SMELL) {
         None => {}
         Some(true) => {
+            cbar.pico.set_led_state(true);
             let test = cbar.soundboard.sci_smell.get_next();
             let test_wav = Wav::new(test);
             cbar.pico.play_wav_blocking(&test_wav);
@@ -179,6 +178,7 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
     match cheat_code.validate(&cheat_code::SCIENTIST_DRINK) {
         None => {}
         Some(true) => {
+            cbar.pico.set_led_state(true);
             let test = cbar.soundboard.sci_drink.get_next();
             let test_wav = Wav::new(test);
             cbar.pico.play_wav_blocking(&test_wav);
@@ -190,6 +190,7 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
     match cheat_code.validate(&cheat_code::SCIENTIST_FUNNY) {
         None => {}
         Some(true) => {
+            cbar.pico.set_led_state(true);
             let test = cbar.soundboard.sci_funny.get_next();
             let test_wav = Wav::new(test);
             cbar.pico.play_wav_blocking(&test_wav);
@@ -201,6 +202,7 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
     match cheat_code.validate(&cheat_code::SCIENTIST_SCREAM) {
         None => {}
         Some(true) => {
+            cbar.pico.set_led_state(true);
             let test = cbar.soundboard.sci_scream.get_next();
             let test_wav = Wav::new(test);
             cbar.pico.play_wav_blocking(&test_wav);

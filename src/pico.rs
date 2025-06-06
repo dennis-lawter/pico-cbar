@@ -27,24 +27,14 @@ type BlackButtonPin =
 type RedButtonPin =
     hal::gpio::Pin<hal::gpio::bank0::Gpio1, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
 
-type Led1Pin = hal::gpio::Pin<
-    hal::gpio::bank0::Gpio18,
-    hal::gpio::FunctionSio<hal::gpio::SioOutput>,
-    hal::gpio::PullDown,
->;
-type Led2Pin = hal::gpio::Pin<
-    hal::gpio::bank0::Gpio19,
+type IndicatorLedPin = hal::gpio::Pin<
+    hal::gpio::bank0::Gpio13,
     hal::gpio::FunctionSio<hal::gpio::SioOutput>,
     hal::gpio::PullDown,
 >;
 
 type BuzzerPwmSlice = hal::pwm::Slice<hal::pwm::Pwm2, hal::pwm::FreeRunning>;
 type BuzzerPinChannel = hal::pwm::Channel<BuzzerPwmSlice, hal::pwm::A>;
-
-pub enum LedNames {
-    Led1,
-    Led2,
-}
 
 #[allow(dead_code)]
 pub struct Pico {
@@ -57,8 +47,7 @@ pub struct Pico {
     pub tilt_reset_button: TiltResetButtonPin,
     pub black_button: BlackButtonPin,
     pub red_button: RedButtonPin,
-    pub led1: Led1Pin,
-    pub led2: Led2Pin,
+    pub led: IndicatorLedPin,
 }
 impl Pico {
     pub fn set_amplitude(&mut self, amplitude: u8) {
@@ -69,12 +58,10 @@ impl Pico {
         }
     }
 
-    pub fn set_led_state(&mut self, led: LedNames, state: bool) {
-        match (led, state) {
-            (LedNames::Led1, true) => self.led1.set_high().unwrap(),
-            (LedNames::Led1, false) => self.led1.set_low().unwrap(),
-            (LedNames::Led2, true) => self.led2.set_high().unwrap(),
-            (LedNames::Led2, false) => self.led2.set_low().unwrap(),
+    pub fn set_led_state(&mut self, state: bool) {
+        match state {
+            true => self.led.set_high().unwrap(),
+            false => self.led.set_low().unwrap(),
         }
     }
 
@@ -138,10 +125,8 @@ impl Default for Pico {
         let black_button = pins.gpio0.into_pull_up_input();
         let red_button = pins.gpio1.into_pull_up_input();
 
-        let led1 = pins.gpio18.into_push_pull_output();
-        let led2 = pins.gpio19.into_push_pull_output();
-        let mut pwr_led = pins.gpio13.into_push_pull_output();
-        pwr_led.set_high().unwrap();
+        let mut led = pins.gpio13.into_push_pull_output();
+        led.set_high().unwrap();
 
         let mut pwm_slices = bsp::hal::pwm::Slices::new(pac.PWM, &mut pac.RESETS);
 
@@ -173,8 +158,7 @@ impl Default for Pico {
                 tilt_reset_button,
                 black_button,
                 red_button,
-                led1,
-                led2,
+                led,
             }
         }
     }
