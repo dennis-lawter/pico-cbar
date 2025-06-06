@@ -1,7 +1,3 @@
-// use crate::pico::Pico;
-// use crate::sound_library::SoundLibrary;
-use crate::wav::Wav;
-
 const MAX_PLAYLIST_SIZE: u8 = 6;
 
 pub struct Playlist<'a> {
@@ -37,10 +33,10 @@ impl<'a> Playlist<'a> {
         wav
     }
 
-    // pub fn get_rand(&mut self, index: usize) -> Wav<'static> {
-    //     let index = index % self.length as usize;
-    //     self.sounds[index as usize].clone().unwrap()
-    // }
+    pub fn get_rand(&mut self, index_seed: usize) -> &'a [u8] {
+        let index = index_seed % self.length as usize;
+        self.sounds[index as usize].clone().unwrap()
+    }
 }
 
 pub struct Soundboard<'a> {

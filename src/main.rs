@@ -87,7 +87,7 @@ fn main_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -
             // cbar.pico.play_wav_blocking(&wav);
 
             // play_some_sound(cbar);
-            let wavdat = cbar.soundboard.ba_drink.get_next();
+            let wavdat = cbar.soundboard.ba_drink.get_rand(cbar.loop_count);
             let wav = Wav::new(wavdat);
             cbar.pico.play_wav_blocking(&wav);
             // cbar.pico.delay.delay_ms(1000);
