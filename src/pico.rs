@@ -33,7 +33,7 @@ type IndicatorLedPin = hal::gpio::Pin<
     hal::gpio::PullDown,
 >;
 
-type BuzzerPwmSlice = hal::pwm::Slice<hal::pwm::Pwm2, hal::pwm::FreeRunning>;
+type BuzzerPwmSlice = hal::pwm::Slice<hal::pwm::Pwm5, hal::pwm::FreeRunning>;
 type BuzzerPinChannel = hal::pwm::Channel<BuzzerPwmSlice, hal::pwm::A>;
 
 #[allow(dead_code)]
@@ -133,11 +133,12 @@ impl Default for Pico {
         unsafe {
             // Configure buzzer PWM slice
             let buzzer_pwm_slice_ptr: *mut BuzzerPwmSlice =
-                &mut pwm_slices.pwm2 as *mut BuzzerPwmSlice;
+                &mut pwm_slices.pwm5 as *mut BuzzerPwmSlice;
 
             let buzzer_channel_ptr =
                 &mut (*buzzer_pwm_slice_ptr).channel_a as *mut BuzzerPinChannel;
-            (*buzzer_channel_ptr).output_to(pins.gpio4);
+            (*buzzer_channel_ptr).output_to(pins.gpio10);
+            (*buzzer_channel_ptr).output_to(pins.gpio26);
 
             let top = 512;
             let div_int = 1;
