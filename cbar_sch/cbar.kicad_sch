@@ -6669,7 +6669,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "9.8kohm"
+		(property "Value" "1 Mohm"
 			(at 50.8 38.0999 0)
 			(effects
 				(font
