@@ -5,6 +5,7 @@ mod button;
 mod cbar;
 mod cheat_code;
 mod pico;
+mod player;
 mod sound_library;
 mod soundboard;
 mod wav;
@@ -30,6 +31,9 @@ enum States {
 #[entry]
 fn main() -> ! {
     let mut cbar = Cbar::default();
+    unsafe {
+        player::PICO = Some(&mut *&mut cbar.pico);
+    }
     let mut cheat_code_record = CheatCodeRecord::default();
 
     let mut state = States::Main;
