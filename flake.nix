@@ -28,10 +28,9 @@
 
           # software
           tokei
-          blender
           kicad
-          librecad
           freecad
+          cura-appimage
           
           # dependencies
           flip-link
