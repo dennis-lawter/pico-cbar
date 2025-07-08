@@ -31,6 +31,7 @@
           kicad
           freecad
           cura-appimage
+          blender
           
           # dependencies
           flip-link
