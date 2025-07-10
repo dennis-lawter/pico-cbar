@@ -83,7 +83,7 @@ flowchart TD
     mb--(12Vbus 12Vgnd)-->btn
     mb--(5Vgnd Btn1 Btn2 Led1)-->btn
     mb--(12Vbus 12Vgnd)-->amp
-    mb--(Lsig Rsig 5Vgnd)-->amp
+    mb--(Lsig Rsig 5Vgnd)----->amp
 
     btn--(12Vin 12Vgnd)-->bms
 
@@ -91,5 +91,5 @@ flowchart TD
     bms--(B1 B2)-->b2
     bms--(B2 B+)-->b3
 
-    spk--(L+ L- R+ R-)-->amp
+    spk--(L+ L- R+ R-)------>amp
 ```
