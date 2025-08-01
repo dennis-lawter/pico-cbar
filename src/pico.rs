@@ -22,9 +22,9 @@ type TiltTriggerButtonPin =
     hal::gpio::Pin<hal::gpio::bank0::Gpio2, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
 type TiltResetButtonPin =
     hal::gpio::Pin<hal::gpio::bank0::Gpio3, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
-type BlackButtonPin =
+type MetalButtonPin =
     hal::gpio::Pin<hal::gpio::bank0::Gpio0, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
-type RedButtonPin =
+type BodyButtonPin =
     hal::gpio::Pin<hal::gpio::bank0::Gpio1, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
 
 type IndicatorLedPin = hal::gpio::Pin<
@@ -45,8 +45,8 @@ pub struct Pico {
     pub buzzer_pwm_slice_ptr: *mut BuzzerPwmSlice,
     pub tilt_trigger_button: TiltTriggerButtonPin,
     pub tilt_reset_button: TiltResetButtonPin,
-    pub black_button: BlackButtonPin,
-    pub red_button: RedButtonPin,
+    pub metal_button: MetalButtonPin,
+    pub body_button: BodyButtonPin,
     pub led: IndicatorLedPin,
 }
 impl Pico {
@@ -69,8 +69,8 @@ impl Pico {
         match key {
             ButtonName::TiltTrigger => self.tilt_trigger_button.is_low().unwrap(),
             ButtonName::TiltReset => self.tilt_reset_button.is_low().unwrap(),
-            ButtonName::MetalHit => self.black_button.is_low().unwrap(),
-            ButtonName::BodyHit => self.red_button.is_low().unwrap(),
+            ButtonName::MetalHit => self.metal_button.is_low().unwrap(),
+            ButtonName::BodyHit => self.body_button.is_low().unwrap(),
         }
     }
 
@@ -122,8 +122,8 @@ impl Default for Pico {
 
         let tilt_trigger_button = pins.gpio2.into_pull_up_input();
         let tilt_reset_button = pins.gpio3.into_pull_up_input();
-        let black_button = pins.gpio0.into_pull_up_input();
-        let red_button = pins.gpio1.into_pull_up_input();
+        let metal_button = pins.gpio0.into_pull_up_input();
+        let body_button = pins.gpio1.into_pull_up_input();
 
         let mut led = pins.gpio4.into_push_pull_output();
         led.set_high().unwrap();
@@ -157,8 +157,8 @@ impl Default for Pico {
                 buzzer_pwm_slice_ptr,
                 tilt_trigger_button,
                 tilt_reset_button,
-                black_button,
-                red_button,
+                metal_button,
+                body_button,
                 led,
             }
         }
