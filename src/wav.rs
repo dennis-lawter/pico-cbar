@@ -4,6 +4,7 @@ pub struct Wav<'a> {
     pub sample_rate: u32,
     pub data_ref: &'a [u8],
     pub chunk_len: usize,
+    pub gain: u8,
 }
 impl Wav<'static> {
     #[allow(dead_code)]
@@ -67,6 +68,7 @@ impl Wav<'static> {
             sample_rate,
             data_ref,
             chunk_len,
+            gain: 4u8,
         }
     }
 }

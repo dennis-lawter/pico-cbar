@@ -52,14 +52,16 @@ fn main_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -
     match cheat_code.validate(&CHEAT_CODE) {
         Some(true) => {
             let wavdat = cbar.soundboard.cheat_entry.get_by_index(1);
-            let wav = Wav::new(wavdat);
+            let mut wav = Wav::new(wavdat);
+            wav.gain = 3;
             cbar.pico.play_wav_blocking(&wav);
             cheat_code.reset();
             return States::Cheat;
         }
         Some(false) => {
             let wavdat = cbar.soundboard.cheat_entry.get_by_index(0);
-            let wav = Wav::new(wavdat);
+            let mut wav = Wav::new(wavdat);
+            wav.gain = 3;
             cbar.pico.play_wav_blocking(&wav);
             cheat_code.reset();
         }
@@ -87,15 +89,19 @@ fn main_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -
         .is_button_released_past_limit(US_REQUIRED_FOR_VALID_PRESS);
 
     if cbar.swing_primed && trigger_valid_press && reset_valid_release {
+        let mut gain = 4u8;
         let wavdata = if cbar.metal_btn.is_button_down() {
+            gain = 2;
             cbar.soundboard.cbar_metal.get_by_index(cbar.loop_count)
         } else if cbar.body_btn.is_button_down() {
+            gain = 3;
             cbar.soundboard.cbar_body.get_by_index(cbar.loop_count)
         } else {
             cbar.soundboard.cbar_miss.get_by_index(cbar.loop_count)
         };
 
-        let wav = Wav::new(wavdata);
+        let mut wav = Wav::new(wavdata);
+        wav.gain = gain;
         cbar.pico.play_wav_blocking(&wav);
         cbar.swing_primed = false;
 
@@ -108,6 +114,7 @@ fn main_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -
 }
 
 fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) -> States {
+    cbar.pico.set_amplitude(0, 1);
     cbar.tick();
     let led_state = (cbar.loop_count / 100_000) % 2 == 0;
     cbar.pico.set_led_state(led_state);
@@ -123,9 +130,10 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
         None => {}
         Some(true) => {
             cbar.pico.set_led_state(true);
-            let test = cbar.soundboard.ba_smell.get_next();
-            let test_wav = Wav::new(test);
-            cbar.pico.play_wav_blocking(&test_wav);
+            let wavdat = cbar.soundboard.ba_smell.get_next();
+            let mut wav = Wav::new(wavdat);
+            wav.gain = 3;
+            cbar.pico.play_wav_blocking(&wav);
             cheat_code.reset();
         }
         Some(false) => {}
@@ -135,9 +143,10 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
         None => {}
         Some(true) => {
             cbar.pico.set_led_state(true);
-            let test = cbar.soundboard.ba_drink.get_next();
-            let test_wav = Wav::new(test);
-            cbar.pico.play_wav_blocking(&test_wav);
+            let wavdat = cbar.soundboard.ba_drink.get_next();
+            let mut wav = Wav::new(wavdat);
+            wav.gain = 3;
+            cbar.pico.play_wav_blocking(&wav);
             cheat_code.reset();
         }
         Some(false) => {}
@@ -147,9 +156,10 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
         None => {}
         Some(true) => {
             cbar.pico.set_led_state(true);
-            let test = cbar.soundboard.ba_funny.get_next();
-            let test_wav = Wav::new(test);
-            cbar.pico.play_wav_blocking(&test_wav);
+            let wavdat = cbar.soundboard.ba_funny.get_next();
+            let mut wav = Wav::new(wavdat);
+            wav.gain = 3;
+            cbar.pico.play_wav_blocking(&wav);
             cheat_code.reset();
         }
         Some(false) => {}
@@ -159,9 +169,10 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
         None => {}
         Some(true) => {
             cbar.pico.set_led_state(true);
-            let test = cbar.soundboard.ba_scream.get_next();
-            let test_wav = Wav::new(test);
-            cbar.pico.play_wav_blocking(&test_wav);
+            let wavdat = cbar.soundboard.ba_scream.get_next();
+            let mut wav = Wav::new(wavdat);
+            wav.gain = 3;
+            cbar.pico.play_wav_blocking(&wav);
             cheat_code.reset();
         }
         Some(false) => {}
@@ -171,9 +182,10 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
         None => {}
         Some(true) => {
             cbar.pico.set_led_state(true);
-            let test = cbar.soundboard.sci_smell.get_next();
-            let test_wav = Wav::new(test);
-            cbar.pico.play_wav_blocking(&test_wav);
+            let wavdat = cbar.soundboard.sci_smell.get_next();
+            let mut wav = Wav::new(wavdat);
+            wav.gain = 3;
+            cbar.pico.play_wav_blocking(&wav);
             cheat_code.reset();
         }
         Some(false) => {}
@@ -183,9 +195,10 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
         None => {}
         Some(true) => {
             cbar.pico.set_led_state(true);
-            let test = cbar.soundboard.sci_drink.get_next();
-            let test_wav = Wav::new(test);
-            cbar.pico.play_wav_blocking(&test_wav);
+            let wavdat = cbar.soundboard.sci_drink.get_next();
+            let mut wav = Wav::new(wavdat);
+            wav.gain = 3;
+            cbar.pico.play_wav_blocking(&wav);
             cheat_code.reset();
         }
         Some(false) => {}
@@ -195,9 +208,10 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
         None => {}
         Some(true) => {
             cbar.pico.set_led_state(true);
-            let test = cbar.soundboard.sci_funny.get_next();
-            let test_wav = Wav::new(test);
-            cbar.pico.play_wav_blocking(&test_wav);
+            let wavdat = cbar.soundboard.sci_funny.get_next();
+            let mut wav = Wav::new(wavdat);
+            wav.gain = 3;
+            cbar.pico.play_wav_blocking(&wav);
             cheat_code.reset();
         }
         Some(false) => {}
@@ -207,9 +221,10 @@ fn cheat_state_loop(cbar: &mut Cbar<'static>, cheat_code: &mut CheatCodeRecord) 
         None => {}
         Some(true) => {
             cbar.pico.set_led_state(true);
-            let test = cbar.soundboard.sci_scream.get_next();
-            let test_wav = Wav::new(test);
-            cbar.pico.play_wav_blocking(&test_wav);
+            let wavdat = cbar.soundboard.sci_scream.get_next();
+            let mut wav = Wav::new(wavdat);
+            wav.gain = 3;
+            cbar.pico.play_wav_blocking(&wav);
             cheat_code.reset();
         }
         Some(false) => {}

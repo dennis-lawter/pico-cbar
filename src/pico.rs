@@ -50,11 +50,11 @@ pub struct Pico {
     pub led: IndicatorLedPin,
 }
 impl Pico {
-    pub fn set_amplitude(&mut self, amplitude: u8) {
+    pub fn set_amplitude(&mut self, amplitude: u8, gain: u8) {
         //let scaled_amplitude = (amplitude as u32 * (5_535 + 1)) / 256;
-        let scaled_amplitude = amplitude as u16;
+        let scaled_amplitude = (amplitude as u16) * (gain as u16);
         unsafe {
-            (*self.buzzer_channel_ptr).set_duty(scaled_amplitude as u16);
+            (*self.buzzer_channel_ptr).set_duty(scaled_amplitude);
         }
     }
 
@@ -84,11 +84,11 @@ impl Pico {
             data_end = sound.len();
         }
         for i in data_start..data_end {
-            self.set_amplitude(sound[i]);
+            self.set_amplitude(sound[i], wav.gain);
 
             self.delay.delay_us(cpu_delay_between_samples_in_us);
         }
-        self.set_amplitude(0);
+        self.set_amplitude(0, 1);
     }
 }
 impl Default for Pico {
