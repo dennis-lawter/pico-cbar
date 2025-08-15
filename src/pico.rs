@@ -19,16 +19,15 @@ use crate::button::ButtonName;
 use crate::wav::Wav;
 
 type TiltTriggerButtonPin =
-    hal::gpio::Pin<hal::gpio::bank0::Gpio2, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
-type TiltResetButtonPin =
     hal::gpio::Pin<hal::gpio::bank0::Gpio3, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
-type MetalButtonPin =
-    hal::gpio::Pin<hal::gpio::bank0::Gpio0, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
+type TiltResetButtonPin =
+    hal::gpio::Pin<hal::gpio::bank0::Gpio4, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
 type BodyButtonPin =
-    hal::gpio::Pin<hal::gpio::bank0::Gpio1, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
-
+    hal::gpio::Pin<hal::gpio::bank0::Gpio5, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
+type MetalButtonPin =
+    hal::gpio::Pin<hal::gpio::bank0::Gpio6, hal::gpio::FunctionSioInput, hal::gpio::PullUp>;
 type IndicatorLedPin = hal::gpio::Pin<
-    hal::gpio::bank0::Gpio4,
+    hal::gpio::bank0::Gpio7,
     hal::gpio::FunctionSio<hal::gpio::SioOutput>,
     hal::gpio::PullDown,
 >;
@@ -120,12 +119,11 @@ impl Default for Pico {
             &mut pac.RESETS,
         );
 
-        let tilt_trigger_button = pins.gpio2.into_pull_up_input();
-        let tilt_reset_button = pins.gpio3.into_pull_up_input();
-        let metal_button = pins.gpio0.into_pull_up_input();
-        let body_button = pins.gpio1.into_pull_up_input();
-
-        let mut led = pins.gpio4.into_push_pull_output();
+        let tilt_trigger_button = pins.gpio3.into_pull_up_input();
+        let tilt_reset_button = pins.gpio4.into_pull_up_input();
+        let body_button = pins.gpio5.into_pull_up_input();
+        let metal_button = pins.gpio6.into_pull_up_input();
+        let mut led = pins.gpio7.into_push_pull_output();
         led.set_high().unwrap();
 
         let mut pwm_slices = bsp::hal::pwm::Slices::new(pac.PWM, &mut pac.RESETS);
